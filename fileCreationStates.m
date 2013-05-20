@@ -1,5 +1,5 @@
 classdef fileCreationStates
    enumeration
-      sR, sRx, sRy, sA, sDiff
+      sR, sRx, sRy, sA, sDiff, sInt
    end
 end

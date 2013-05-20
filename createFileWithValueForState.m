@@ -28,9 +28,27 @@ elseif (state == fileCreationStates.sDiff)
     for i = 1 : valueSize
         fprintf (fid, '\t dx(%u) = %s;\n', i, parse (value {i, 1}));
     end
+elseif (state == fileCreationStates.sInt)
+    syms x y t;
+    sizeMult = valueSize * (valueSize + 1);
+    x = sym ('x', [sizeMult 1]);
+    y = sym ('x', [valueSize 1]);
+    F = A (t, y);
+    
+    fprintf (fid, '\t dx = zeros(%u,1);\n', sizeMult);
+    for i = 1 : valueSize
+        fprintf (fid, '\t dx(%u) = %s;\n',i, parse (value{i,1}));
+    end
+    for i=1 : valueSize
+        y = x (i * valueSize + 1 : (i + 1) * valueSize);
+        y = F * y;
+        for j = 1 : valueSize
+            fprintf (fid,'\t dx(%u) = %s;\n',i * valueSize + j, parse (char (y (j))));
+        end
+    end
 end
-fprintf(fid,'end');
-fclose(fid);
+fprintf (fid,'end');
+fclose (fid);
 end
 
 function [fileName] = fileNameForState (state)
@@ -45,6 +63,8 @@ switch (state)
         fileName = 'A.m';
     case fileCreationStates.sDiff
         fileName = 'sys_diff.m';
+    case fileCreationStates.sInt
+        fileName = 'Int.m';
     otherwise
         fileName = 'error.m';
 end
@@ -62,6 +82,8 @@ switch (state)
         header = 'function [a] = A(t,x)\n';
     case fileCreationStates.sDiff
         header = 'function [dx] = sys_diff(t,x)\n';
+    case fileCreationStates.sInt
+        header = 'function [dx] = Int(t,x)\n';
     otherwise
         header = 'errorHeader';
 end
@@ -77,8 +99,10 @@ switch (state)
         initialization = 'ry = [';
 	case fileCreationStates.sA
         initialization = 'a = [';
-    case fileCreationState.sDiff
-        initialization = '';
+    case fileCreationStates.sDiff
+        initialization = '\n';
+    case fileCreationStates.sInt
+        initialization = '\n';
     otherwise
         initialization = 'errorInitialization = [';
 end

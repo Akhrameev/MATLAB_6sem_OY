@@ -109,6 +109,15 @@ y = sym ('y', [1 systemForSolvingDimension]);
 createA (parse (char (jacobian (systemForSolving (:, 1), x))));
 createR (systemForSolvingDimension, parse (char (jacobian (systemForSolving (:, 2), x))),...
           parse (char (jacobian (systemForSolving (:, 2), y))));
+createDiff (systemForSolvingDimension);
+createInt (systemForSolvingDimension);
+
+p0 = zeros (1, systemForSolvingDimension);
+for i = 1 : systemForSolvingDimension
+   p0 (i) = systemForSolving {i, 3}; 
+end
+
+
 
 
 % --- function to init data in table

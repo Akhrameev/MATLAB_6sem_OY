@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 19-May-2013 19:57:32
+% Last Modified by GUIDE v2.5 20-May-2013 21:43:23
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -80,7 +80,6 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 initExample ('Examples/krai2tela.mat', handles);
 compute ();
-end
 
 function [ method ] = setMethod (state)
 switch (state)
@@ -101,15 +100,16 @@ function [ ] = compute ()
 global solvingTimeBegin solvingTimeEnd solvingStep;
 global solvingIterationCount systemForSolvingDimension;
 global systemForSolving;
-if ((solvingTimeEnd - solvingTimeEnd) * solvingStep < 0)
+if ((solvingTimeEnd - solvingTimeBegin) * solvingStep < 0)
     errordlg('Error! Incorrect input (time_begin, time_end or step)','OK');
     return;
 end
-x = sym ('x', [1 systemForSolvingDimansion]);
+x = sym ('x', [1 systemForSolvingDimension]);
 y = sym ('y', [1 systemForSolvingDimension]);
 createA (parse (char (jacobian (systemForSolving (:, 1), x))));
 createR (systemForSolvingDimension, parse (char (jacobian (systemForSolving (:, 2), x))),...
           parse (char (jacobian (systemForSolving (:, 2), y))));
+createDiff (systemForSolvingDimension);
 
 
 % --- function to init data in table
