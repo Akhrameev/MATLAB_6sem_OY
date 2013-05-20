@@ -99,7 +99,7 @@ end;
 function [ ] = compute ()
 global solvingTimeBegin solvingTimeEnd solvingStep;
 global solvingIterationCount systemForSolvingDimension;
-global systemForSolving;
+global systemForSolving p Y solvingTimeStarred;
 if ((solvingTimeEnd - solvingTimeBegin) * solvingStep < 0)
     errordlg('Error! Incorrect input (time_begin, time_end or step)','OK');
     return;
@@ -110,13 +110,38 @@ createA (parse (char (jacobian (systemForSolving (:, 1), x))));
 createR (systemForSolvingDimension, parse (char (jacobian (systemForSolving (:, 2), x))),...
           parse (char (jacobian (systemForSolving (:, 2), y))));
 createDiff (systemForSolvingDimension);
-createInt (systemForSolvingDimension);
+createInternal (systemForSolvingDimension);
 
 p0 = zeros (1, systemForSolvingDimension);
 for i = 1 : systemForSolvingDimension
    p0 (i) = systemForSolving {i, 3}; 
 end
 
+p = external (p0, solvingIterationCount);
+Y = solveDifferential (systemForSolvingDimension, solvingTimeBegin, solvingTimeEnd, solvingStep, p);
+%iteration complete
+cla reset;
+hold all;
+style = '-';
+color = 'r';
+width = 1;
+m = floor(0.5*(solvingTimeEnd - solvingTimeBegin) / solvingStep);
+if ji
+    plot(handles.plotter,Y(:,Xi),Y(:,Xj),strcat(style,color),'LineWidth',width);
+    xlabel(sprintf('x%d',Xi));
+    ylabel(sprintf('x%d',Xj));
+    text(Y(m,Xi),Y(m,Xj),sprintf('x%d(x%d)',Xj,Xi));
+else
+    for i = 1 : systemForSolvingDimension
+        %visibility parameter from table
+        if systemForSolving {i,4} == 1
+            plot(handles.plotter, solvingTimeBegin:solvingStep:solvingTimeEnd, Y(:,i), strcat(style,color), 'LineWidth', width); 
+            text (solvingTimeBegin + m * solvingStep, Y(m,i), sprintf ('x%d(t)',i));
+        end
+    end
+    xlabel('t');
+    ylabel('x');
+end
 
 
 
