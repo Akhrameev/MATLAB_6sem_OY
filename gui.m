@@ -79,7 +79,7 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 initExample ('Examples/krai2tela.mat', handles);
-compute ();
+compute (handles);
 
 function [ method ] = setMethod (state)
 switch (state)
@@ -96,7 +96,7 @@ switch (state)
 end;
 
 % --- function to compute 
-function [ ] = compute ()
+function [ ] = compute (handles)
 global solvingTimeBegin solvingTimeEnd solvingStep;
 global solvingIterationCount systemForSolvingDimension;
 global systemForSolving p Y solvingTimeStarred;
@@ -126,6 +126,7 @@ style = '-';
 color = 'r';
 width = 1;
 m = floor(0.5*(solvingTimeEnd - solvingTimeBegin) / solvingStep);
+ji = 0;
 if ji
     plot(handles.plotter,Y(:,Xi),Y(:,Xj),strcat(style,color),'LineWidth',width);
     xlabel(sprintf('x%d',Xi));
