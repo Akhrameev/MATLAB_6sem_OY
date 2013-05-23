@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 23-May-2013 17:55:44
+% Last Modified by GUIDE v2.5 23-May-2013 19:26:42
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -154,7 +154,7 @@ function drawPlot (handles)
 global systemForSolving Y;
 global systemForSolvingDimension;
 global lineStyle lineColor;
-global Xi Xj xi;
+global Xi Xj ji;
 global solvingTimeBegin solvingTimeEnd solvingStep;
 cla reset;
 hold all;
@@ -162,7 +162,6 @@ style = lineStyle;
 color = lineColor;
 width = 1;
 m = floor(0.5*(solvingTimeEnd - solvingTimeBegin) / solvingStep);
-ji = 0;
 if ji
     plot(handles.plotter,Y(:,Xi),Y(:,Xj),strcat(style,color),'LineWidth',width);
     xlabel(sprintf('x%d',Xi));
@@ -324,7 +323,7 @@ function redraw_Callback(hObject, eventdata, handles)
 % hObject    handle to redraw (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+drawPlot (handles);
 
 % --- Executes on button press in showSystemForSolving.
 function showSystemForSolving_Callback(hObject, eventdata, handles)
@@ -421,16 +420,23 @@ function checkboxXiXj_Callback(hObject, eventdata, handles)
 % hObject    handle to checkboxXiXj (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global ji;
+ji = get(hObject,'Value');
 
 % Hint: get(hObject,'Value') returns toggle state of checkboxXiXj
-
-
 
 function Xi_Callback(hObject, eventdata, handles)
 % hObject    handle to Xi (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+global Xi;
+global systemForSolvingDimension;
+num = str2double (get (hObject, 'String'));
+if ((num >= 1) && (num <= systemForSolvingDimension))
+    Xi = num;
+else
+    set (hObject, 'String', 'NaN');
+end
 % Hints: get(hObject,'String') returns contents of Xi as text
 %        str2double(get(hObject,'String')) returns contents of Xi as a double
 
@@ -440,7 +446,9 @@ function Xi_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to Xi (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-
+global Xi;
+Xi = 1;
+set (hObject, 'String', Xi);
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -448,12 +456,19 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
 function Xj_Callback(hObject, eventdata, handles)
 % hObject    handle to Xj (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+global Xj;
+global systemForSolvingDimension;
+num = str2double (get (hObject, 'String'));
+if ((num >= 1) && (num <= systemForSolvingDimension))
+    Xj = num;
+else
+    set (hObject, 'String', 'NaN');
+    errordlg('Внимание! Ошибка заполнения Xj','OK');
+end
 % Hints: get(hObject,'String') returns contents of Xj as text
 %        str2double(get(hObject,'String')) returns contents of Xj as a double
 
@@ -463,9 +478,28 @@ function Xj_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to Xj (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-
+global Xj;
+Xj = 1;
+set (hObject, 'String', Xj);
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes when entered data in editable cell(s) in sdu.
+function sdu_CellEditCallback(hObject, eventdata, handles)
+% hObject    handle to sdu (see GCBO)
+% eventdata  structure with the following fields (see UITABLE)
+%	Indices: row and column indices of the cell(s) edited
+%	PreviousData: previous data for the cell(s) edited
+%	EditData: string(s) entered by the user
+%	NewData: EditData or its converted form set on the Data property. Empty if Data was not changed
+%	Error: error string when failed to convert EditData to appropriate value for Data
+% handles    structure with handles and user data (see GUIDATA)
+global Xi Xj solved;
+Xi = 1;
+Xj = 1;
+solved = 0;
+
