@@ -76,9 +76,11 @@ varargout{1} = handles.output;
 %function to get Exmples
 function examplesList = getExamples ()
 examplesList = getAllFiles ('Examples/'); 
-%fid_r = fopen('Examples/list.txt', 'r');
-%C = textscan(fid_r, '%s');
-%examplesList = C{1};
+
+function propertyList = getPropertyListFromFile (filename)
+fid_r = fopen(filename, 'r');
+C = textscan(fid_r, '%s');
+propertyList = C{1};
 
 
 %function to get all files in Directory (from stackoverflow)
@@ -146,11 +148,18 @@ end
 
 p = external (p0, solvingIterationCount);
 Y = solveDifferential (systemForSolvingDimension, solvingTimeBegin, solvingTimeEnd, solvingStep, p);
-%iteration complete
+drawPlot (handles);
+
+function drawPlot (handles)
+global systemForSolving Y;
+global systemForSolvingDimension;
+global lineStyle lineColor;
+global Xi Xj xi;
+global solvingTimeBegin solvingTimeEnd solvingStep;
 cla reset;
 hold all;
-style = '-';
-color = 'r';
+style = lineStyle;
+color = lineColor;
 width = 1;
 m = floor(0.5*(solvingTimeEnd - solvingTimeBegin) / solvingStep);
 ji = 0;
@@ -170,8 +179,7 @@ else
     xlabel('t');
     ylabel('x');
 end
-
-
+setShowSystemForSolving ('off');
 
 % --- function to init data in table
 function [ ] = initExample (file, handles)
@@ -353,7 +361,9 @@ function popupLineStyle_Callback(hObject, eventdata, handles)
 % hObject    handle to popupLineStyle (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+global lineStyle;
+contents = cellstr(get(hObject,'String'));
+lineStyle = contents{get(hObject,'Value')};
 % Hints: contents = cellstr(get(hObject,'String')) returns popupLineStyle contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupLineStyle
 
@@ -363,7 +373,12 @@ function popupLineStyle_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to popupLineStyle (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-
+global lineStyle;
+pList = getPropertyListFromFile ('Settings/lineStyles.txt');
+lineStyle = pList{1};
+popupMenuHandle = findobj(gcbf,'Tag','popupLineStyle');
+set (popupMenuHandle,'String', pList);
+set (popupMenuHandle,'Value', lineStyle);
 % Hint: popupmenu controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -376,7 +391,9 @@ function popupLineColor_Callback(hObject, eventdata, handles)
 % hObject    handle to popupLineColor (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+global lineColor;
+contents = cellstr(get(hObject,'String'));
+lineColor = contents{get(hObject,'Value')};
 % Hints: contents = cellstr(get(hObject,'String')) returns popupLineColor contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from popupLineColor
 
@@ -386,7 +403,12 @@ function popupLineColor_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to popupLineColor (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-
+global lineColor;
+pList = getPropertyListFromFile ('Settings/colors.txt');
+lineColor = pList{1};
+popupMenuHandle = findobj(gcbf,'Tag','popupLineColor');
+set (popupMenuHandle,'String', pList);
+set (popupMenuHandle,'Value', lineColor);
 % Hint: popupmenu controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
