@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 23-May-2013 19:26:42
+% Last Modified by GUIDE v2.5 24-May-2013 02:43:17
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -503,3 +503,58 @@ Xi = 1;
 Xj = 1;
 solved = 0;
 
+
+% --------------------------------------------------------------------
+function menuFileManual_Callback(hObject, eventdata, handles)
+% hObject    handle to menuFileManual (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuHelpManual_Callback(hObject, eventdata, handles)
+% hObject    handle to menuHelpManual (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% --------------------------------------------------------------------
+function menuHelp_Callback(hObject, eventdata, handles)
+% hObject    handle to menuHelpManual (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+helpdlg({'Äàííàÿ ïðîãðàìì ðåàëèçóåò ðåøåíèå êðàåâîé çàäà÷è äëÿ äèôôåðåíöèàëüíûõ';...
+         'óðàâíåíèé ìåòîäîì ïðîäîëæåíèÿ ïî ïàðàìåòðó. Àëãîðèòì âçÿò èç êíèãè ';...
+         '"Îïòèìàëüíîå óïðàâëåíèå. Ëèíåéíàÿ òåîðèÿ è ïðèëîæåíèÿ"; àâòîðû  ';...
+         'Þ.Í.Êèñåëåâ, Ñ.Í.Àââàêóìîâ, Ì.Â.Îðëîâ; èçäàòåëüñòâî: ÌÀÊÑ Ïðåññ, 2007.';...
+         '                                               ';...
+         'Äëÿ ðàáîòû ñ ïðèëîæåíèåì íåîáõîäèìî çàïîëíèòü ïîëÿ â ïàíåëè, íàõîäÿùåéñÿ â ' 
+         'ëåâîì âåðõíåì óãëó. Ïîñëå ýòîãî íàæàòü íà "Êðàåâàÿ çàäà÷à" è â ïîÿâèâøóþñÿ '
+         'òàáëèöó çàïèñàòü (ïî ñòîëáöàì)';...
+         ' - ïðàâóþ ÷àñòü ÑÄÓ â ôîðìàòå f(t,x1,...,xn);';...
+         ' - êðàåâûå óñëîâèÿ â âèäå R(x1,...xn,y1,...yn);';...
+         ' - âåêòîð ð0 (íà÷àëüíîå ïðèáëèæåíèÿ);';...
+         ' - â ñòîëáöå "Âûâîä" îòìåòèòü êàêèå òðàåêòîðèè âû õîòèòå âûâåñòè íà ýêðàí.';...
+         'Òàêæå ìîæíî âûáðàòü ÷èñëåííûå ìåòîäû, ñ ïîìîùüþ êîòîðûõ âû õîòåëè áû ';...
+         'ðåøèòü âíåøíþþ è âíóòðåííþþ çàäà÷ó. Ïî óìîë÷àíèþ ñòîèò Ðóíãå-Êóòòû 4-5.';...
+         'Ïîñëå íàæèìàåì êíîïêó "Ðåøèòü. Íà ýêðàí áóäóò âûâåäåíû âûáðàííûå';...
+         'òðàåêòîðèè, à òàêæå ïî íàæàòèþ íà "Ðåçóëüòàò" ïîÿâèòñÿ òàáëèöà ñî ';...
+         'çíà÷åíèÿìè òðàåêòîðèé íà âðåìåííîé ñåòêå. Â ïðèëîæåíèè åñòü âîçìîæíîñòü';... 
+         'íàñòðîéêè îïöèé âûâîäà. Äëÿ òîãî ÷òîáû âûâåñòè ãðàôèê áåç ïåðåñ÷åòà,';...
+         'âîñïîëüçóéòåñü ôóíêöèåé "Ïåðåðèñîâàòü".'},'Ïîìîùü');
+
+% --------------------------------------------------------------------
+function menuAbout_Callback(hObject, eventdata, handles)
+% hObject    handle to menuAbout (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuExit_Callback(hObject, eventdata, handles)
+% hObject    handle to menuExit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+answer = exitQuestion;
+if (isequal(answer, 'OK') || isequal(answer, 'Yes'))
+    delete (gcf);
+end
