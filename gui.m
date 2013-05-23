@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 21-May-2013 12:27:01
+% Last Modified by GUIDE v2.5 23-May-2013 17:55:44
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -126,7 +126,7 @@ end;
 function [ ] = compute (handles)
 global solvingTimeBegin solvingTimeEnd solvingStep;
 global solvingIterationCount systemForSolvingDimension;
-global systemForSolving p Y solvingTimeStarred;
+global systemForSolving p Y;
 if ((solvingTimeEnd - solvingTimeBegin) * solvingStep < 0)
     errordlg('Error! Incorrect input (time_begin, time_end or step)','OK');
     return;
@@ -223,6 +223,7 @@ solvingExternalEpsilon = str2double (get (handles.eps_ext, 'String'));
 solvingInternalEpsilon = str2double (get (handles.eps_int, 'String'));
 solvingTimeStarred = str2double (get (handles.t_star, 'String'));
 solvingIterationCount = str2double (get (handles.Iter_num, 'String'));
+setShowSystemForSolving ('on');
 
 function sys_dim_Callback(hObject, eventdata, handles)
 % hObject    handle to sys_dim (see GCBO)
@@ -301,10 +302,148 @@ function example_CreateFcn(hObject, eventdata, handles)
 %       See ISPC and COMPUTER.
 global currentExample;
 examplesList = getExamples ();
-currentExample = 'Examples/krai2tela.mat';
+currentExample = examplesList{1};
 popupMenuHandle = findobj(gcbf,'Tag','example');
 set(popupMenuHandle,'String', examplesList);
 handles.example.set ('Value', currentExample);
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in redraw.
+function redraw_Callback(hObject, eventdata, handles)
+% hObject    handle to redraw (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in showSystemForSolving.
+function showSystemForSolving_Callback(hObject, eventdata, handles)
+% hObject    handle to showSystemForSolving (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+changeShowSystemForSolving ();
+
+function setShowSystemForSolving (show)
+systemForSolvingElement = findobj(gcbf,'Tag','sdu');
+panelWithPlotter = findobj(gcbf,'Tag','panelPlotter');
+if (length(show) == 2)
+    set (systemForSolvingElement,'Visible', 'on');
+    set (panelWithPlotter, 'Visible', 'off');
+else
+    set (systemForSolvingElement,'Visible', 'off');
+    set (panelWithPlotter, 'Visible', 'on');
+end 
+
+function changeShowSystemForSolving ()
+systemForSolvingElement = findobj(gcbf,'Tag','sdu');
+panelWithPlotter = findobj(gcbf,'Tag','panelPlotter');
+shown = get(systemForSolvingElement,'Visible');
+if (length(shown) == 2)
+    set (systemForSolvingElement,'Visible', 'off');
+    set (panelWithPlotter, 'Visible', 'on');
+else
+    set (systemForSolvingElement,'Visible', 'on');
+    set (panelWithPlotter, 'Visible', 'off');
+end
+
+% --- Executes on selection change in popupLineStyle.
+function popupLineStyle_Callback(hObject, eventdata, handles)
+% hObject    handle to popupLineStyle (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupLineStyle contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupLineStyle
+
+
+% --- Executes during object creation, after setting all properties.
+function popupLineStyle_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupLineStyle (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in popupLineColor.
+function popupLineColor_Callback(hObject, eventdata, handles)
+% hObject    handle to popupLineColor (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns popupLineColor contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from popupLineColor
+
+
+% --- Executes during object creation, after setting all properties.
+function popupLineColor_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to popupLineColor (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in checkboxXiXj.
+function checkboxXiXj_Callback(hObject, eventdata, handles)
+% hObject    handle to checkboxXiXj (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkboxXiXj
+
+
+
+function Xi_Callback(hObject, eventdata, handles)
+% hObject    handle to Xi (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of Xi as text
+%        str2double(get(hObject,'String')) returns contents of Xi as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function Xi_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to Xi (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function Xj_Callback(hObject, eventdata, handles)
+% hObject    handle to Xj (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of Xj as text
+%        str2double(get(hObject,'String')) returns contents of Xj as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function Xj_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to Xj (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
