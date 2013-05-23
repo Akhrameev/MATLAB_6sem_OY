@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 20-May-2013 21:43:23
+% Last Modified by GUIDE v2.5 21-May-2013 12:27:01
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -73,12 +73,39 @@ function varargout = gui_OutputFcn(hObject, eventdata, handles)
 varargout{1} = handles.output;
 
 
+%function to get Exmples
+function examplesList = getExamples ()
+examplesList = getAllFiles ('Examples/'); 
+%fid_r = fopen('Examples/list.txt', 'r');
+%C = textscan(fid_r, '%s');
+%examplesList = C{1};
+
+
+%function to get all files in Directory (from stackoverflow)
+function fileList = getAllFiles(dirName)
+
+dirData = dir(dirName);      %# Get the data for the current directory
+dirIndex = [dirData.isdir];  %# Find the index for directories
+fileList = {dirData(~dirIndex).name};  %'# Get a list of the files
+if ~isempty(fileList)
+    fileList = cellfun(@(x) fullfile(dirName,x),...  %# Prepend path to files
+                     fileList,'UniformOutput',false);
+end
+subDirs = {dirData(dirIndex).name};  %# Get a list of the subdirectories
+validIndex = ~ismember(subDirs,{'.','..'});  %# Find index of subdirectories
+                                             %#   that are not '.' or '..'
+for iDir = find(validIndex)                  %# Loop over valid subdirectories
+    nextDir = fullfile(dirName,subDirs{iDir});    %# Get the subdirectory path
+    fileList = [fileList; getAllFiles(nextDir)];  %# Recursively call getAllFiles
+end
+
 % --- Executes on button press in pushbutton1.
 function pushbutton1_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-initExample ('Examples/krai2tela.mat', handles);
+global currentExample;
+initExample (currentExample, handles);
 compute (handles);
 
 function [ method ] = setMethod (state)
@@ -251,4 +278,33 @@ switch (name)
         existElement = name;
     otherwise
         existElement = 0;
+end
+
+
+% --- Executes on selection change in example.
+function example_Callback(hObject, eventdata, handles)
+% hObject    handle to example (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global currentExample;
+contents = cellstr(get(hObject,'String'));
+currentExample = contents{get(hObject,'Value')};
+initExample (currentExample, handles);
+
+% --- Executes during object creation, after setting all properties.
+function example_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to example (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+global currentExample;
+examplesList = getExamples ();
+currentExample = 'Examples/krai2tela.mat';
+popupMenuHandle = findobj(gcbf,'Tag','example');
+set(popupMenuHandle,'String', examplesList);
+handles.example.set ('Value', currentExample);
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
 end
