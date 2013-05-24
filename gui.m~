@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 24-May-2013 02:43:17
+% Last Modified by GUIDE v2.5 24-May-2013 18:48:16
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -106,8 +106,6 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global currentExample;
-initExample (currentExample, handles);
 compute (handles);
 
 function [ method ] = setMethod (state)
@@ -154,7 +152,7 @@ function drawPlot (handles)
 global systemForSolving Y;
 global systemForSolvingDimension;
 global lineStyle lineColor;
-global Xi Xj ji;
+global Xi Xj ji solved;
 global solvingTimeBegin solvingTimeEnd solvingStep;
 cla reset;
 hold all;
@@ -178,6 +176,7 @@ else
     xlabel('t');
     ylabel('x');
 end
+solved = 1;
 setShowSystemForSolving ('off', handles);
 
 % --- function to init data in table
@@ -237,14 +236,16 @@ function sys_dim_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of sys_dim as text
-%        str2double(get(hObject,'String')) returns contents of sys_dim as a double
 global systemForSolvingDimension;
+global solved;
 n = str2double (get(hObject, 'String'));
-if (n <= 0 || isnan(n))
+if (n <= 0 || isnan(n) || floor (n) < n)
     errordlg('Error! systemForSolvingDimension is incorrect.','OK');
+    s = sprintf('%f', systemForSolvingDimension);
+    set (hObject, 'String', s); 
 else
     systemForSolvingDimension = n;
+    solved = 0;
 end
 set (handles.sdu, 'Data', cell (systemForSolvingDimension, 4));
 
@@ -330,7 +331,7 @@ function showSystemForSolving_Callback(hObject, eventdata, handles)
 % hObject    handle to showSystemForSolving (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-changeShowSystemForSolving ();
+changeShowSystemForSolving (handles);
 
 function setShowSystemForSolving (show, handles)
 if (length(show) == 2)
@@ -348,7 +349,7 @@ if (length(shown) == 2)
     set (handles.panelPlotter, 'Visible', 'on');
 else
     set (handles.sdu,'Visible', 'on');
-    set (handlespanelPlotter, 'Visible', 'off');
+    set (handles.panelPlotter, 'Visible', 'off');
 end
 
 % --- Executes on selection change in popupLineStyle.
@@ -497,10 +498,12 @@ function sdu_CellEditCallback(hObject, eventdata, handles)
 global Xi Xj solved;
 Xi = 1;
 Xj = 1;
-solved = 0;
+if (eventdata.Indices(2) <= 3)
+    solved = 0;
+end
 
 
-% --------------------------------------------------------------------
+% -------------------------------------------------------------------
 function menuFileManual_Callback(hObject, eventdata, handles)
 % hObject    handle to menuFileManual (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -518,32 +521,14 @@ function menuHelp_Callback(hObject, eventdata, handles)
 % hObject    handle to menuHelpManual (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-helpdlg({'Äàííàÿ ïðîãðàìì ðåàëèçóåò ðåøåíèå êðàåâîé çàäà÷è äëÿ äèôôåðåíöèàëüíûõ';...
-         'óðàâíåíèé ìåòîäîì ïðîäîëæåíèÿ ïî ïàðàìåòðó. Àëãîðèòì âçÿò èç êíèãè ';...
-         '"Îïòèìàëüíîå óïðàâëåíèå. Ëèíåéíàÿ òåîðèÿ è ïðèëîæåíèÿ"; àâòîðû  ';...
-         'Þ.Í.Êèñåëåâ, Ñ.Í.Àââàêóìîâ, Ì.Â.Îðëîâ; èçäàòåëüñòâî: ÌÀÊÑ Ïðåññ, 2007.';...
-         '                                               ';...
-         'Äëÿ ðàáîòû ñ ïðèëîæåíèåì íåîáõîäèìî çàïîëíèòü ïîëÿ â ïàíåëè, íàõîäÿùåéñÿ â ' 
-         'ëåâîì âåðõíåì óãëó. Ïîñëå ýòîãî íàæàòü íà "Êðàåâàÿ çàäà÷à" è â ïîÿâèâøóþñÿ '
-         'òàáëèöó çàïèñàòü (ïî ñòîëáöàì)';...
-         ' - ïðàâóþ ÷àñòü ÑÄÓ â ôîðìàòå f(t,x1,...,xn);';...
-         ' - êðàåâûå óñëîâèÿ â âèäå R(x1,...xn,y1,...yn);';...
-         ' - âåêòîð ð0 (íà÷àëüíîå ïðèáëèæåíèÿ);';...
-         ' - â ñòîëáöå "Âûâîä" îòìåòèòü êàêèå òðàåêòîðèè âû õîòèòå âûâåñòè íà ýêðàí.';...
-         'Òàêæå ìîæíî âûáðàòü ÷èñëåííûå ìåòîäû, ñ ïîìîùüþ êîòîðûõ âû õîòåëè áû ';...
-         'ðåøèòü âíåøíþþ è âíóòðåííþþ çàäà÷ó. Ïî óìîë÷àíèþ ñòîèò Ðóíãå-Êóòòû 4-5.';...
-         'Ïîñëå íàæèìàåì êíîïêó "Ðåøèòü. Íà ýêðàí áóäóò âûâåäåíû âûáðàííûå';...
-         'òðàåêòîðèè, à òàêæå ïî íàæàòèþ íà "Ðåçóëüòàò" ïîÿâèòñÿ òàáëèöà ñî ';...
-         'çíà÷åíèÿìè òðàåêòîðèé íà âðåìåííîé ñåòêå. Â ïðèëîæåíèè åñòü âîçìîæíîñòü';... 
-         'íàñòðîéêè îïöèé âûâîäà. Äëÿ òîãî ÷òîáû âûâåñòè ãðàôèê áåç ïåðåñ÷åòà,';...
-         'âîñïîëüçóéòåñü ôóíêöèåé "Ïåðåðèñîâàòü".'},'Ïîìîùü');
+
 
 % --------------------------------------------------------------------
 function menuAbout_Callback(hObject, eventdata, handles)
 % hObject    handle to menuAbout (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+aboutAuthor;
 
 % --------------------------------------------------------------------
 function menuExit_Callback(hObject, eventdata, handles)
@@ -553,4 +538,146 @@ function menuExit_Callback(hObject, eventdata, handles)
 answer = exitQuestion;
 if (isequal(answer, 'OK') || isequal(answer, 'Yes'))
     delete (gcf);
+end
+
+
+
+function left_edge_Callback(hObject, eventdata, handles)
+% hObject    handle to left_edge (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global solvingTimeBegin;
+global solved;
+n = str2double (get(hObject, 'String'));
+if (n <= 0 || isnan(n))
+    errordlg('Error! solvingTimeBegin is incorrect.','OK');
+    s = sprintf('%f', solvingTimeBegin);
+    set (hObject, 'String', s); 
+else
+    solvingTimeBegin = n;
+    solved = 0;
+end
+
+
+
+function right_edge_Callback(hObject, eventdata, handles)
+% hObject    handle to right_edge (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global solvingTimeEnd;
+global solved;
+n = str2double (get(hObject, 'String'));
+if (n <= 0 || isnan(n))
+    errordlg('Error! solvingTimeEnd is incorrect.','OK');
+    s = sprintf('%f', solvingTimeEnd);
+    set (hObject, 'String', s); 
+else
+    solvingTimeEnd = n;
+    solved = 0;
+end
+
+
+
+function t_star_Callback(hObject, eventdata, handles)
+% hObject    handle to t_star (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global solvingTimeStarred;
+global solved;
+n = str2double (get(hObject, 'String'));
+if (n <= 0 || isnan(n))
+    errordlg('Error! solvingTimeStarred is incorrect.','OK');
+    s = sprintf('%f', solvingTimeStarred);
+    set (hObject, 'String', s); 
+else
+    solvingTimeStarred = n;
+    solved = 0;
+end
+
+
+% --- Executes on selection change in meth_int.
+function meth_int_Callback(hObject, eventdata, handles)
+% hObject    handle to meth_int (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global solvingInternalMethod solved;
+solvingInternalMethod = setMethod (get (hObject, 'Value'));
+solved = 0;
+
+% --- Executes on selection change in meth_ext.
+function meth_ext_Callback(hObject, eventdata, handles)
+% hObject    handle to meth_ext (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global solvingExternalMethod solved;
+solvingExternalMethod = setMethod (get (hObject, 'Value'));
+solved = 0;
+
+
+function eps_int_Callback(hObject, eventdata, handles)
+% hObject    handle to eps_int (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global solvingInternalEpsilon solved;
+n = str2double(get(hObject,'String'));
+if n<0 || isnan(n) 
+    errordlg('Error! solvingInternalEpsilon is incorrect.','OK');
+    s = sprintf('%f', solvingInternalEpsilon);
+    set (hObject, 'String', s); 
+else
+    solvingInternalEpsilon = n;
+    solved = 0;
+end
+% Hints: get(hObject,'String') returns contents of eps_int as text
+%        str2double(get(hObject,'String')) returns contents of eps_int as a double
+
+
+
+function eps_ext_Callback(hObject, eventdata, handles)
+% hObject    handle to eps_ext (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global solvingExternalEpsilon solved;
+n = str2double(get(hObject,'String'));
+if n<0 || isnan(n) 
+    errordlg('Error! solvingExternalEpsilon is incorrect.','OK');
+    s = sprintf('%f', solvingExternalEpsilon);
+    set (hObject, 'String', s); 
+else
+    solvingExternalEpsilon = n;
+    solved = 0;
+end
+
+
+
+function step_Callback(hObject, eventdata, handles)
+% hObject    handle to step (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global solvingStep solved;
+n = str2double(get(hObject,'String'));
+if isnan(n)
+    errordlg('Error! solvingStep is incorrect.','OK');
+    s = num2str (solvingStep);
+    set (hObject, 'String', s); 
+else
+    solvingStep = n;
+    solved = 0;
+end
+
+
+
+function Iter_num_Callback(hObject, eventdata, handles)
+% hObject    handle to Iter_num (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global solvingIterationCount solved;
+n = str2double(get(hObject,'String'));
+if ((isnan (n)) || (n <= 0) || (floor(n) < n))
+    errordlg('Error! solvingIterationCount is incorrect.','OK');
+    s = num2str (solvingIterationCount);
+    set (hObject, 'String', s); 
+else
+    solvingIterationCount = n;
+    solved = 0;
 end
