@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 23-May-2013 19:26:42
+% Last Modified by GUIDE v2.5 24-May-2013 02:43:17
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -51,13 +51,13 @@ function gui_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to gui (see VARARGIN)
-
+global currentExample;
 % Choose default command line output for gui
 handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
-
+initExample (currentExample, handles);
 % UIWAIT makes gui wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
@@ -163,7 +163,6 @@ color = lineColor;
 width = 1;
 m = floor(0.5*(solvingTimeEnd - solvingTimeBegin) / solvingStep);
 if ji
-    if (Xi
     plot(handles.plotter,Y(:,Xi),Y(:,Xj),strcat(style,color),'LineWidth',width);
     xlabel(sprintf('x%d',Xi));
     ylabel(sprintf('x%d',Xj));
@@ -179,7 +178,7 @@ else
     xlabel('t');
     ylabel('x');
 end
-setShowSystemForSolving ('off');
+setShowSystemForSolving ('off', handles);
 
 % --- function to init data in table
 function [ ] = initExample (file, handles)
@@ -231,7 +230,7 @@ solvingExternalEpsilon = str2double (get (handles.eps_ext, 'String'));
 solvingInternalEpsilon = str2double (get (handles.eps_int, 'String'));
 solvingTimeStarred = str2double (get (handles.t_star, 'String'));
 solvingIterationCount = str2double (get (handles.Iter_num, 'String'));
-setShowSystemForSolving ('on');
+setShowSystemForSolving ('on', handles);
 
 function sys_dim_Callback(hObject, eventdata, handles)
 % hObject    handle to sys_dim (see GCBO)
@@ -333,27 +332,23 @@ function showSystemForSolving_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 changeShowSystemForSolving ();
 
-function setShowSystemForSolving (show)
-systemForSolvingElement = findobj(gcbf,'Tag','sdu');
-panelWithPlotter = findobj(gcbf,'Tag','panelPlotter');
+function setShowSystemForSolving (show, handles)
 if (length(show) == 2)
-    set (systemForSolvingElement,'Visible', 'on');
-    set (panelWithPlotter, 'Visible', 'off');
+    set (handles.sdu, 'Visible', 'on');
+    set (handles.panelPlotter, 'Visible', 'off');
 else
-    set (systemForSolvingElement,'Visible', 'off');
-    set (panelWithPlotter, 'Visible', 'on');
+    set (handles.sdu, 'Visible', 'off');
+    set (handles.panelPlotter, 'Visible', 'on');
 end 
 
-function changeShowSystemForSolving ()
-systemForSolvingElement = findobj(gcbf,'Tag','sdu');
-panelWithPlotter = findobj(gcbf,'Tag','panelPlotter');
-shown = get(systemForSolvingElement,'Visible');
+function changeShowSystemForSolving (handles)
+shown = get(handles.sdu,'Visible');
 if (length(shown) == 2)
-    set (systemForSolvingElement,'Visible', 'off');
-    set (panelWithPlotter, 'Visible', 'on');
+    set (handles.sdu,'Visible', 'off');
+    set (handles.panelPlotter, 'Visible', 'on');
 else
-    set (systemForSolvingElement,'Visible', 'on');
-    set (panelWithPlotter, 'Visible', 'off');
+    set (handles.sdu,'Visible', 'on');
+    set (handlespanelPlotter, 'Visible', 'off');
 end
 
 % --- Executes on selection change in popupLineStyle.
@@ -449,6 +444,7 @@ function Xi_CreateFcn(hObject, eventdata, handles)
 % handles    empty - handles not created until after all CreateFcns called
 global Xi;
 Xi = 1;
+set (hObject, 'String', Xi);
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -480,6 +476,7 @@ function Xj_CreateFcn(hObject, eventdata, handles)
 % handles    empty - handles not created until after all CreateFcns called
 global Xj;
 Xj = 1;
+set (hObject, 'String', Xj);
 % Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
@@ -502,3 +499,58 @@ Xi = 1;
 Xj = 1;
 solved = 0;
 
+
+% --------------------------------------------------------------------
+function menuFileManual_Callback(hObject, eventdata, handles)
+% hObject    handle to menuFileManual (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuHelpManual_Callback(hObject, eventdata, handles)
+% hObject    handle to menuHelpManual (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% --------------------------------------------------------------------
+function menuHelp_Callback(hObject, eventdata, handles)
+% hObject    handle to menuHelpManual (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+helpdlg({'Äàííàÿ ïðîãðàìì ðåàëèçóåò ðåøåíèå êðàåâîé çàäà÷è äëÿ äèôôåðåíöèàëüíûõ';...
+         'óðàâíåíèé ìåòîäîì ïðîäîëæåíèÿ ïî ïàðàìåòðó. Àëãîðèòì âçÿò èç êíèãè ';...
+         '"Îïòèìàëüíîå óïðàâëåíèå. Ëèíåéíàÿ òåîðèÿ è ïðèëîæåíèÿ"; àâòîðû  ';...
+         'Þ.Í.Êèñåëåâ, Ñ.Í.Àââàêóìîâ, Ì.Â.Îðëîâ; èçäàòåëüñòâî: ÌÀÊÑ Ïðåññ, 2007.';...
+         '                                               ';...
+         'Äëÿ ðàáîòû ñ ïðèëîæåíèåì íåîáõîäèìî çàïîëíèòü ïîëÿ â ïàíåëè, íàõîäÿùåéñÿ â ' 
+         'ëåâîì âåðõíåì óãëó. Ïîñëå ýòîãî íàæàòü íà "Êðàåâàÿ çàäà÷à" è â ïîÿâèâøóþñÿ '
+         'òàáëèöó çàïèñàòü (ïî ñòîëáöàì)';...
+         ' - ïðàâóþ ÷àñòü ÑÄÓ â ôîðìàòå f(t,x1,...,xn);';...
+         ' - êðàåâûå óñëîâèÿ â âèäå R(x1,...xn,y1,...yn);';...
+         ' - âåêòîð ð0 (íà÷àëüíîå ïðèáëèæåíèÿ);';...
+         ' - â ñòîëáöå "Âûâîä" îòìåòèòü êàêèå òðàåêòîðèè âû õîòèòå âûâåñòè íà ýêðàí.';...
+         'Òàêæå ìîæíî âûáðàòü ÷èñëåííûå ìåòîäû, ñ ïîìîùüþ êîòîðûõ âû õîòåëè áû ';...
+         'ðåøèòü âíåøíþþ è âíóòðåííþþ çàäà÷ó. Ïî óìîë÷àíèþ ñòîèò Ðóíãå-Êóòòû 4-5.';...
+         'Ïîñëå íàæèìàåì êíîïêó "Ðåøèòü. Íà ýêðàí áóäóò âûâåäåíû âûáðàííûå';...
+         'òðàåêòîðèè, à òàêæå ïî íàæàòèþ íà "Ðåçóëüòàò" ïîÿâèòñÿ òàáëèöà ñî ';...
+         'çíà÷åíèÿìè òðàåêòîðèé íà âðåìåííîé ñåòêå. Â ïðèëîæåíèè åñòü âîçìîæíîñòü';... 
+         'íàñòðîéêè îïöèé âûâîäà. Äëÿ òîãî ÷òîáû âûâåñòè ãðàôèê áåç ïåðåñ÷åòà,';...
+         'âîñïîëüçóéòåñü ôóíêöèåé "Ïåðåðèñîâàòü".'},'Ïîìîùü');
+
+% --------------------------------------------------------------------
+function menuAbout_Callback(hObject, eventdata, handles)
+% hObject    handle to menuAbout (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuExit_Callback(hObject, eventdata, handles)
+% hObject    handle to menuExit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+answer = exitQuestion;
+if (isequal(answer, 'OK') || isequal(answer, 'Yes'))
+    delete (gcf);
+end

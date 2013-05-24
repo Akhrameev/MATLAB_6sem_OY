@@ -51,13 +51,13 @@ function gui_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to gui (see VARARGIN)
-
+global currentExample;
 % Choose default command line output for gui
 handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
-
+initExample (currentExample, handles);
 % UIWAIT makes gui wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
@@ -178,7 +178,7 @@ else
     xlabel('t');
     ylabel('x');
 end
-setShowSystemForSolving ('off');
+setShowSystemForSolving ('off', handles);
 
 % --- function to init data in table
 function [ ] = initExample (file, handles)
@@ -230,7 +230,7 @@ solvingExternalEpsilon = str2double (get (handles.eps_ext, 'String'));
 solvingInternalEpsilon = str2double (get (handles.eps_int, 'String'));
 solvingTimeStarred = str2double (get (handles.t_star, 'String'));
 solvingIterationCount = str2double (get (handles.Iter_num, 'String'));
-setShowSystemForSolving ('on');
+setShowSystemForSolving ('on', handles);
 
 function sys_dim_Callback(hObject, eventdata, handles)
 % hObject    handle to sys_dim (see GCBO)
@@ -330,29 +330,25 @@ function showSystemForSolving_Callback(hObject, eventdata, handles)
 % hObject    handle to showSystemForSolving (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-changeShowSystemForSolving ();
+changeShowSystemForSolving (handles);
 
-function setShowSystemForSolving (show)
-systemForSolvingElement = findobj(gcbf,'Tag','sdu');
-panelWithPlotter = findobj(gcbf,'Tag','panelPlotter');
+function setShowSystemForSolving (show, handles)
 if (length(show) == 2)
-    set (systemForSolvingElement,'Visible', 'on');
-    set (panelWithPlotter, 'Visible', 'off');
+    set (handles.sdu, 'Visible', 'on');
+    set (handles.panelPlotter, 'Visible', 'off');
 else
-    set (systemForSolvingElement,'Visible', 'off');
-    set (panelWithPlotter, 'Visible', 'on');
+    set (handles.sdu, 'Visible', 'off');
+    set (handles.panelPlotter, 'Visible', 'on');
 end 
 
-function changeShowSystemForSolving ()
-systemForSolvingElement = findobj(gcbf,'Tag','sdu');
-panelWithPlotter = findobj(gcbf,'Tag','panelPlotter');
-shown = get(systemForSolvingElement,'Visible');
+function changeShowSystemForSolving (handles)
+shown = get(handles.sdu,'Visible');
 if (length(shown) == 2)
-    set (systemForSolvingElement,'Visible', 'off');
-    set (panelWithPlotter, 'Visible', 'on');
+    set (handles.sdu,'Visible', 'off');
+    set (handles.panelPlotter, 'Visible', 'on');
 else
-    set (systemForSolvingElement,'Visible', 'on');
-    set (panelWithPlotter, 'Visible', 'off');
+    set (handles.sdu,'Visible', 'on');
+    set (handles.panelPlotter, 'Visible', 'off');
 end
 
 % --- Executes on selection change in popupLineStyle.
