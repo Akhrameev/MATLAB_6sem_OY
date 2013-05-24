@@ -309,15 +309,18 @@ function example_CreateFcn(hObject, eventdata, handles)
 % Hint: popupmenu controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 global currentExample;
-examplesList = getExamples ();
+examplesList = updateExamplesList (handles);
 currentExample = examplesList{1};
-popupMenuHandle = findobj(gcbf,'Tag','example');
-set(popupMenuHandle,'String', examplesList);
 handles.example.set ('Value', currentExample);
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
 
+
+function [examplesList] = updateExamplesList (handles)
+examplesList = getExamples ();
+popupMenuHandle = findobj(gcbf,'Tag','example');
+set(popupMenuHandle,'String', examplesList);
 
 % --- Executes on button press in redraw.
 function redraw_Callback(hObject, eventdata, handles)
@@ -706,5 +709,11 @@ listSize = size(examplesList);
 listSize = listSize(2);
 defaultName = strcat ('Examples/example', num2str(listSize + 1));
 filename = uiputfile('Examples/*.mat','Save example', defaultName);
+filename = strcat ('Examples/', filename);
+fid = fopen(filename,'w');
+fclose (fid);
 save(filename,'saveStructure');
-%update examples list here
+updateExamplesList (handles);
+
+
+
