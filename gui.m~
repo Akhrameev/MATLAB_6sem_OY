@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 24-May-2013 18:48:16
+% Last Modified by GUIDE v2.5 24-May-2013 19:56:41
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -241,7 +241,7 @@ global solved;
 n = str2double (get(hObject, 'String'));
 if (n <= 0 || isnan(n) || floor (n) < n)
     errordlg('Error! systemForSolvingDimension is incorrect.','OK');
-    s = sprintf('%f', systemForSolvingDimension);
+    s = num2str (systemForSolvingDimension);
     set (hObject, 'String', s); 
 else
     systemForSolvingDimension = n;
@@ -551,7 +551,7 @@ global solved;
 n = str2double (get(hObject, 'String'));
 if (n <= 0 || isnan(n))
     errordlg('Error! solvingTimeBegin is incorrect.','OK');
-    s = sprintf('%f', solvingTimeBegin);
+    s = num2str (solvingTimeBegin);
     set (hObject, 'String', s); 
 else
     solvingTimeBegin = n;
@@ -569,7 +569,7 @@ global solved;
 n = str2double (get(hObject, 'String'));
 if (n <= 0 || isnan(n))
     errordlg('Error! solvingTimeEnd is incorrect.','OK');
-    s = sprintf('%f', solvingTimeEnd);
+    s = num2str (solvingTimeEnd);
     set (hObject, 'String', s); 
 else
     solvingTimeEnd = n;
@@ -587,7 +587,7 @@ global solved;
 n = str2double (get(hObject, 'String'));
 if (n <= 0 || isnan(n))
     errordlg('Error! solvingTimeStarred is incorrect.','OK');
-    s = sprintf('%f', solvingTimeStarred);
+    ss = num2str (solvingTimeStarred);
     set (hObject, 'String', s); 
 else
     solvingTimeStarred = n;
@@ -620,9 +620,9 @@ function eps_int_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global solvingInternalEpsilon solved;
 n = str2double(get(hObject,'String'));
-if n<0 || isnan(n) 
+if ((n < 0) || isnan(n)) 
     errordlg('Error! solvingInternalEpsilon is incorrect.','OK');
-    s = sprintf('%f', solvingInternalEpsilon);
+    s = num2str (solvingInternalEpsilon);
     set (hObject, 'String', s); 
 else
     solvingInternalEpsilon = n;
@@ -639,9 +639,9 @@ function eps_ext_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global solvingExternalEpsilon solved;
 n = str2double(get(hObject,'String'));
-if n<0 || isnan(n) 
+if ((n < 0) || isnan(n)) 
     errordlg('Error! solvingExternalEpsilon is incorrect.','OK');
-    s = sprintf('%f', solvingExternalEpsilon);
+    s = num2str (solvingExternalEpsilon);
     set (hObject, 'String', s); 
 else
     solvingExternalEpsilon = n;
@@ -681,3 +681,30 @@ else
     solvingIterationCount = n;
     solved = 0;
 end
+
+
+% --------------------------------------------------------------------
+function menuSave_Callback(hObject, eventdata, handles)
+% hObject    handle to menuSave (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+fieldRecord = {'sys_dim','left_edge','right_edge','step','t_star',...
+               'eps_int','eps_ext','Iter_num','meth_int','meth_ext','sdu'};
+saveStructure.fieldRecord = fieldRecord;
+for i=1:length(fieldRecord)-1
+    property(i).Value = get(getfield(handles,fieldRecord{i}),'Value');
+    property(i).Enable = get(getfield(handles,fieldRecord{i}),'Enable');
+    property(i).String = get(getfield(handles,fieldRecord{i}),'String');
+    property(i).Visible = get(getfield(handles,fieldRecord{i}),'Visible');
+end
+property(length(fieldRecord)).Data = get(getfield(handles,fieldRecord{end}),'Data');
+property(length(fieldRecord)).Enable = get(getfield(handles,fieldRecord{end}),'Enable');
+property(length(fieldRecord)).Visible = get(getfield(handles,fieldRecord{end}),'Visible');
+saveStructure.property = property;
+examplesList = getExamples ();
+listSize = size(examplesList);
+listSize = listSize(2);
+defaultName = 
+filename = uiputfile('Examples/*.mat','Save example');
+save(filename,'saveStructure');
+%update examples list here

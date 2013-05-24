@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 24-May-2013 18:48:16
+% Last Modified by GUIDE v2.5 24-May-2013 19:56:41
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -681,3 +681,30 @@ else
     solvingIterationCount = n;
     solved = 0;
 end
+
+
+% --------------------------------------------------------------------
+function menuSave_Callback(hObject, eventdata, handles)
+% hObject    handle to menuSave (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+fieldRecord = {'sys_dim','left_edge','right_edge','step','t_star',...
+               'eps_int','eps_ext','Iter_num','meth_int','meth_ext','sdu'};
+saveStructure.fieldRecord = fieldRecord;
+for i=1:length(fieldRecord)-1
+    property(i).Value = get(getfield(handles,fieldRecord{i}),'Value');
+    property(i).Enable = get(getfield(handles,fieldRecord{i}),'Enable');
+    property(i).String = get(getfield(handles,fieldRecord{i}),'String');
+    property(i).Visible = get(getfield(handles,fieldRecord{i}),'Visible');
+end
+property(length(fieldRecord)).Data = get(getfield(handles,fieldRecord{end}),'Data');
+property(length(fieldRecord)).Enable = get(getfield(handles,fieldRecord{end}),'Enable');
+property(length(fieldRecord)).Visible = get(getfield(handles,fieldRecord{end}),'Visible');
+saveStructure.property = property;
+examplesList = getExamples ();
+listSize = size(examplesList);
+listSize = listSize(2);
+defaultName = strcat ('Examples/example', num2str(listSize + 1));
+filename = uiputfile('Examples/*.mat','Save example', defaultName);
+save(filename,'saveStructure');
+%update examples list here
