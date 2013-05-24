@@ -1,35 +1,35 @@
-function varargout = exitQuestion(varargin)
-% EXITQUESTION MATLAB code for exitQuestion.fig
-%      EXITQUESTION by itself, creates a new EXITQUESTION or raises the
+function varargout = aboutAuthor(varargin)
+% ABOUTAUTHOR MATLAB code for aboutAuthor.fig
+%      ABOUTAUTHOR by itself, creates a new ABOUTAUTHOR or raises the
 %      existing singleton*.
 %
-%      H = EXITQUESTION returns the handle to a new EXITQUESTION or the handle to
+%      H = ABOUTAUTHOR returns the handle to a new ABOUTAUTHOR or the handle to
 %      the existing singleton*.
 %
-%      EXITQUESTION('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in EXITQUESTION.M with the given input arguments.
+%      ABOUTAUTHOR('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in ABOUTAUTHOR.M with the given input arguments.
 %
-%      EXITQUESTION('Property','Value',...) creates a new EXITQUESTION or raises the
+%      ABOUTAUTHOR('Property','Value',...) creates a new ABOUTAUTHOR or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before exitQuestion_OpeningFcn gets called.  An
+%      applied to the GUI before aboutAuthor_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to exitQuestion_OpeningFcn via varargin.
+%      stop.  All inputs are passed to aboutAuthor_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help exitQuestion
+% Edit the above text to modify the response to help aboutAuthor
 
-% Last Modified by GUIDE v2.5 24-May-2013 03:01:18
+% Last Modified by GUIDE v2.5 24-May-2013 17:34:33
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @exitQuestion_OpeningFcn, ...
-                   'gui_OutputFcn',  @exitQuestion_OutputFcn, ...
+                   'gui_OpeningFcn', @aboutAuthor_OpeningFcn, ...
+                   'gui_OutputFcn',  @aboutAuthor_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -43,17 +43,17 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-% --- Executes just before exitQuestion is made visible.
-function exitQuestion_OpeningFcn(hObject, eventdata, handles, varargin)
+% --- Executes just before aboutAuthor is made visible.
+function aboutAuthor_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to exitQuestion (see VARARGIN)
+% varargin   command line arguments to aboutAuthor (see VARARGIN)
 
-% Choose default command line output for exitQuestion
-handles.output = 'No';
-
+% Choose default command line output for aboutAuthor
+handles.output = 'Yes';
+imshow ('Settings/akhrameev.jpeg');
 % Update handles structure
 guidata(hObject, handles);
 
@@ -103,30 +103,30 @@ set(hObject, 'Units', OldUnits);
 
 % Show a question icon from dialogicons.mat - variables questIconData
 % and questIconMap
-load dialogicons.mat
+%%%%load dialogicons.mat
 
-IconData=questIconData;
-questIconMap(256,:) = get(handles.figure1, 'Color');
-IconCMap=questIconMap;
+%%%%IconData=questIconData;
+%%%%questIconMap(256,:) = get(handles.figure1, 'Color');
+%%%%IconCMap=questIconMap;
 
-Img=image(IconData, 'Parent', handles.axes1);
-set(handles.figure1, 'Colormap', IconCMap);
+%%%%Img=image(IconData, 'Parent', handles.axes1);
+%%%%set(handles.figure1, 'Colormap', IconCMap);
 
 set(handles.axes1, ...
     'Visible', 'off', ...
-    'YDir'   , 'reverse'       , ...
-    'XLim'   , get(Img,'XData'), ...
-    'YLim'   , get(Img,'YData')  ...
-    );
+    'YDir'   , 'reverse');
+%%%%    'XLim'   , get(Img,'XData'), ...
+%%%%    'YLim'   , get(Img,'YData')  ...
+%%%%    );
 
 % Make the GUI modal
 set(handles.figure1,'WindowStyle','modal')
 
-% UIWAIT makes exitQuestion wait for user response (see UIRESUME)
+% UIWAIT makes aboutAuthor wait for user response (see UIRESUME)
 uiwait(handles.figure1);
 
 % --- Outputs from this function are returned to the command line.
-function varargout = exitQuestion_OutputFcn(hObject, eventdata, handles)
+function varargout = aboutAuthor_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -134,28 +134,12 @@ function varargout = exitQuestion_OutputFcn(hObject, eventdata, handles)
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
-
 % The figure can be deleted now
 delete(handles.figure1);
 
-% --- Executes on button press in onExit.
-function onExit_Callback(hObject, eventdata, handles)
-% hObject    handle to onExit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-handles.output = get(hObject,'String');
-
-% Update handles structure
-guidata(hObject, handles);
-
-% Use UIRESUME instead of delete because the OutputFcn needs
-% to get the updated handles structure.
-uiresume(handles.figure1);
-
-% --- Executes on button press in pushbutton2.
-function pushbutton2_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton2 (see GCBO)
+% --- Executes on button press in pushbutton1.
+function pushbutton1_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
@@ -202,6 +186,5 @@ if isequal(get(hObject,'CurrentKey'),'escape')
 end    
     
 if isequal(get(hObject,'CurrentKey'),'return')
-    handles.output = 'Yes';
     uiresume(handles.figure1);
 end    
