@@ -114,11 +114,9 @@ switch (state)
         fid = fopen('Settings/semiquote.txt','r');
         semiquote = textscan(fid, '%s');
         fclose (fid);
-        semiquote = semiquote{1};
-        errorString = cat (semiquote, 'Error in A.m', semiquote);
-        okString = '"OK"';
-        footer = cat ('catch\n\terrordlg (', errorString, ',',okString, ');\nend');
-        %footer = 'catch\n\terrordlg ("Error in A.m","OK");\nend';
+        semiquote = semiquote {1};
+        footer = strcat ('catch\n\terrordlg (', semiquote, 'Error in A.m (systemForSolving)', semiquote, ',',semiquote, 'OK', semiquote, ');\nend');
+        footer = footer {1};
     otherwise
         footer = 'end';
 end
