@@ -56,7 +56,7 @@ handles.output = 'No';
 imshow ('Settings/question.jpg');
 % Update handles structure
 guidata(hObject, handles);
-
+set (hObject, 'Name', 'Выход?');
 % Insert custom Title and Text if specified by the user
 % Hint: when choosing keywords, be sure they are not easily confused 
 % with existing figure properties.  See the output of set(figure) for

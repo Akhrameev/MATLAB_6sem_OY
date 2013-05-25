@@ -57,6 +57,7 @@ progressbarOK = 0;
 handles.output = hObject;
 % Update handles structure
 guidata(hObject, handles);
+set (hObject, 'Name', 'Практикум. 6 семестр. Решение краевых задач. Исходный код: https://github.com/Akhrameev/MATLAB_6sem_OY');
 createWaitbar (handles);
 initExample (currentExample, handles);
 
@@ -171,13 +172,17 @@ switch (state)
         method = @ode45;
 end;
 
+function errorAlert (message)
+setappdata(0, 'UserData', message);
+alert;
+
 % --- function to compute 
 function [ ] = compute (handles)
 global solvingTimeBegin solvingTimeEnd solvingStep;
 global solvingIterationCount systemForSolvingDimension;
 global systemForSolving p Y solvingIterationCurrent;
 if ((solvingTimeEnd - solvingTimeBegin) * solvingStep < 0)
-    errordlg('Error! Incorrect input (time_begin, time_end or step)','OK');
+    errorAlert('Ошибка! Некорректное время начала, конца или неверный шаг.');
     return;
 end
 systemForSolving = get(handles.sdu,'Data');
@@ -302,7 +307,7 @@ function sys_dim_Callback(hObject, eventdata, handles)
 global systemForSolvingDimension;
 n = str2double (get(hObject, 'String'));
 if (n <= 0 || isnan(n) || floor (n) < n)
-    errordlg('Error! systemForSolvingDimension is incorrect.','OK');
+    errorAlert('Ошибка! Некорректная размерность системы.');
     s = num2str (systemForSolvingDimension);
     set (hObject, 'String', s); 
 else
@@ -505,6 +510,7 @@ if ((num >= 1) && (num <= systemForSolvingDimension))
     Xi = num;
 else
     set (hObject, 'String', 'NaN');
+    errorAlert('Внимание! Ошибка заполнения Xi');
 end
 % Hints: get(hObject,'String') returns contents of Xi as text
 %        str2double(get(hObject,'String')) returns contents of Xi as a double
@@ -536,7 +542,7 @@ if ((num >= 1) && (num <= systemForSolvingDimension))
     Xj = num;
 else
     set (hObject, 'String', 'NaN');
-    errordlg('Внимание! Ошибка заполнения Xj','OK');
+    errorAlert('Внимание! Ошибка заполнения Xj');
 end
 % Hints: get(hObject,'String') returns contents of Xj as text
 %        str2double(get(hObject,'String')) returns contents of Xj as a double
@@ -626,7 +632,7 @@ function left_edge_Callback(hObject, eventdata, handles)
 global solvingTimeBegin;
 n = str2double (get(hObject, 'String'));
 if (n <= 0 || isnan(n))
-    errordlg('Error! solvingTimeBegin is incorrect.','OK');
+    errorAlert ('Ошибка! Неверное время начала.');
     s = num2str (solvingTimeBegin);
     set (hObject, 'String', s); 
 else
@@ -643,7 +649,7 @@ function right_edge_Callback(hObject, eventdata, handles)
 global solvingTimeEnd;
 n = str2double (get(hObject, 'String'));
 if (n <= 0 || isnan(n))
-    errordlg('Error! solvingTimeEnd is incorrect.','OK');
+    errorAlert('Ошибка! Неверное время конца.');
     s = num2str (solvingTimeEnd);
     set (hObject, 'String', s); 
 else
@@ -660,7 +666,7 @@ function t_star_Callback(hObject, eventdata, handles)
 global solvingTimeStarred;
 n = str2double (get(hObject, 'String'));
 if (n <= 0 || isnan(n))
-    errordlg('Error! solvingTimeStarred is incorrect.','OK');
+    errorAlert('Ошибка! Неверное время t*.');
     ss = num2str (solvingTimeStarred);
     set (hObject, 'String', s); 
 else
@@ -693,7 +699,7 @@ function eps_int_Callback(hObject, eventdata, handles)
 global solvingInternalEpsilon;
 n = str2double(get(hObject,'String'));
 if ((n < 0) || isnan(n)) 
-    errordlg('Error! solvingInternalEpsilon is incorrect.','OK');
+    errorAlert('Ошибка! Неверные данные точности вычисления.');
     s = num2str (solvingInternalEpsilon);
     set (hObject, 'String', s); 
 else
@@ -711,7 +717,7 @@ function eps_ext_Callback(hObject, eventdata, handles)
 global solvingExternalEpsilon;
 n = str2double(get(hObject,'String'));
 if ((n < 0) || isnan(n)) 
-    errordlg('Error! solvingExternalEpsilon is incorrect.','OK');
+    errorAlert('Ошибка! Неверные данныеточности вычисления.');
     s = num2str (solvingExternalEpsilon);
     set (hObject, 'String', s); 
 else
@@ -727,7 +733,7 @@ function step_Callback(hObject, eventdata, handles)
 global solvingStep;
 n = str2double(get(hObject,'String'));
 if isnan(n)
-    errordlg('Error! solvingStep is incorrect.','OK');
+    errorAlert('Ошибка! Неверные данные длительности шага вычисления.');
     s = num2str (solvingStep);
     set (hObject, 'String', s); 
 else
@@ -743,7 +749,7 @@ function Iter_num_Callback(hObject, eventdata, handles)
 global solvingIterationCount;
 n = str2double(get(hObject,'String'));
 if ((isnan (n)) || (n <= 0) || (floor(n) < n))
-    errordlg('Error! solvingIterationCount is incorrect.','OK');
+    errorAlert('Ошибка! Неверное количество итераций!');
     s = num2str (solvingIterationCount);
     set (hObject, 'String', s); 
 else

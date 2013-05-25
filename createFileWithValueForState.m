@@ -111,13 +111,13 @@ end
 function [footer] = footerForState (state)
 switch (state)
     case fileCreationStates.sA
-        fid = fopen('Settings/semiquote.txt','r');
-        semiquote = textscan(fid, '%s');
-        fclose (fid);
-        semiquote = semiquote {1};
-        footer = strcat ('catch\n\terrordlg (', semiquote, 'Error in A.m (systemForSolving)', semiquote, ',',semiquote, 'OK', semiquote, ');\nend');
-        footer = footer {1};
-        %footer = 'catch\n\terrordlg ("Error in A.m","OK");\nend';
+        %fid = fopen('Settings/semiquote.txt','r');
+        %semiquote = textscan(fid, '%s');
+        %fclose (fid);
+        %semiquote = semiquote {1};
+        %footer = strcat ('catch\n\terrorAlertSystem;\nend');
+        %footer = footer {1};
+        footer = 'catch\n\terrorAlertSystem;\nend';
     otherwise
         footer = 'end';
 end

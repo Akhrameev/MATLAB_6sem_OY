@@ -1,35 +1,35 @@
-function varargout = aboutAuthor(varargin)
-% ABOUTAUTHOR MATLAB code for aboutAuthor.fig
-%      ABOUTAUTHOR by itself, creates a new ABOUTAUTHOR or raises the
+function varargout = alert(varargin)
+% ALERT MATLAB code for alert.fig
+%      ALERT by itself, creates a new ALERT or raises the
 %      existing singleton*.
 %
-%      H = ABOUTAUTHOR returns the handle to a new ABOUTAUTHOR or the handle to
+%      H = ALERT returns the handle to a new ALERT or the handle to
 %      the existing singleton*.
 %
-%      ABOUTAUTHOR('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in ABOUTAUTHOR.M with the given input arguments.
+%      ALERT('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in ALERT.M with the given input arguments.
 %
-%      ABOUTAUTHOR('Property','Value',...) creates a new ABOUTAUTHOR or raises the
+%      ALERT('Property','Value',...) creates a new ALERT or raises the
 %      existing singleton*.  Starting from the left, property value pairs are
-%      applied to the GUI before aboutAuthor_OpeningFcn gets called.  An
+%      applied to the GUI before alert_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to aboutAuthor_OpeningFcn via varargin.
+%      stop.  All inputs are passed to alert_OpeningFcn via varargin.
 %
 %      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
 %      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help aboutAuthor
+% Edit the above text to modify the response to help alert
 
-% Last Modified by GUIDE v2.5 24-May-2013 17:34:33
+% Last Modified by GUIDE v2.5 25-May-2013 19:51:06
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @aboutAuthor_OpeningFcn, ...
-                   'gui_OutputFcn',  @aboutAuthor_OutputFcn, ...
+                   'gui_OpeningFcn', @alert_OpeningFcn, ...
+                   'gui_OutputFcn',  @alert_OutputFcn, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -43,24 +43,25 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-% --- Executes just before aboutAuthor is made visible.
-function aboutAuthor_OpeningFcn(hObject, eventdata, handles, varargin)
+% --- Executes just before alert is made visible.
+function alert_OpeningFcn(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to aboutAuthor (see VARARGIN)
+% varargin   command line arguments to alert (see VARARGIN)
 
-% Choose default command line output for aboutAuthor
+% Choose default command line output for alert
 handles.output = 'Yes';
-imshow ('Settings/akhrameev.jpeg');
+imshow ('Settings/error.jpg');
 % Update handles structure
 guidata(hObject, handles);
-set (hObject, 'Name', 'О программе');
+
 % Insert custom Title and Text if specified by the user
 % Hint: when choosing keywords, be sure they are not easily confused 
 % with existing figure properties.  See the output of set(figure) for
 % a list of figure properties.
+
 if(nargin > 3)
     for index = 1:2:(nargin-3),
         if nargin-3==index, break, end
@@ -68,11 +69,19 @@ if(nargin > 3)
          case 'title'
           set(hObject, 'Name', varargin{index+1});
          case 'string'
-          set(handles.text1, 'String', varargin{index+1});
+          set(handles.message, 'String', varargin{index+1});
         end
     end
 end
 
+set (hObject, 'Name', 'Ошибка!');
+ tmp = getappdata(0,'UserData');
+ if (tmp == 666)
+     set (handles.message, 'String', 'Ошибка! Проверьте корректность данных краевой задачи!');
+ elseif (tmp)
+     set (handles.message, 'String', tmp);
+ end
+ 
 % Determine the position of the dialog - centered on the callback figure
 % if available, else, centered on the screen
 FigPos=get(0,'DefaultFigurePosition');
@@ -108,11 +117,11 @@ set(handles.axes1, ...
 % Make the GUI modal
 set(handles.figure1,'WindowStyle','modal')
 
-% UIWAIT makes aboutAuthor wait for user response (see UIRESUME)
+% UIWAIT makes alert wait for user response (see UIRESUME)
 uiwait(handles.figure1);
 
 % --- Outputs from this function are returned to the command line.
-function varargout = aboutAuthor_OutputFcn(hObject, eventdata, handles)
+function varargout = alert_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -120,6 +129,7 @@ function varargout = aboutAuthor_OutputFcn(hObject, eventdata, handles)
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
+
 % The figure can be deleted now
 delete(handles.figure1);
 
@@ -137,7 +147,6 @@ guidata(hObject, handles);
 % Use UIRESUME instead of delete because the OutputFcn needs
 % to get the updated handles structure.
 uiresume(handles.figure1);
-
 
 % --- Executes when user attempts to close figure1.
 function figure1_CloseRequestFcn(hObject, eventdata, handles)
