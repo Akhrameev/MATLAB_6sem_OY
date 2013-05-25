@@ -1,6 +1,6 @@
 function [ dp ] = solveExternal( count, p )
-global q0 ;%solvingIterationCurrent;
-%can print solvingIterationCurrent here
+global q0 ;
+updateWaitbar ();
 [xa, xb, Xa, Xb] = solveInternal (q0);
 F = R(xa, xb);
 [xa, xb, Xa, Xb] = solveInternal (p);

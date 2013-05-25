@@ -51,16 +51,46 @@ function gui_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to gui (see VARARGIN)
-global currentExample;
+global currentExample progressbarOK;
 % Choose default command line output for gui
+progressbarOK = 0;
 handles.output = hObject;
-
 % Update handles structure
 guidata(hObject, handles);
 initExample (currentExample, handles);
+
 % UIWAIT makes gui wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
+
+function showWaitbar (handles)
+global jProgressbar wait progressbarOK;
+global solvingIterationCount solvingIterationCurrent;
+if (progressbarOK)
+    jProgressbar.setVisible (true);
+    jProgressbar.setMaximum (solvingIterationCount);
+    jProgressbar.setValue (solvingIterationCurrent);
+else
+    try
+        jProgressbar = jcontrol(handles.figure1, javax.swing.JProgressBar(),'Position', [0.2297564186965108 0.05507246376811594 0.42857142857142855 0.07391304347826087]); 
+        jProgressbar.setMaximum (solvingIterationCount);
+        jProgressbar.setMinimum (0);
+        jProgressbar.setValue (solvingIterationCurrent);
+        jProgressbar.setVisible (true);
+        progressbarOK = 1;
+    catch
+        wait = waitbar (solvingIterationCurrent/solvingIterationCount, 'In progress');
+        progressbarOK = 0;
+    end; 
+end
+
+function closeWaitbar ()
+global jProgressbar wait progressbarOK;
+if (progressbarOK)
+    jProgressbar.setVisible (false);
+else
+    close (wait);
+end;
 
 % --- Outputs from this function are returned to the command line.
 function varargout = gui_OutputFcn(hObject, eventdata, handles) 
@@ -143,9 +173,10 @@ p0 = zeros (1, systemForSolvingDimension);
 for i = 1 : systemForSolvingDimension
    p0 (i) = systemForSolving {i, 3}; 
 end
-
+showWaitbar (handles);
 p = external (p0, solvingIterationCount);
 Y = solveDifferential (systemForSolvingDimension, solvingTimeBegin, solvingTimeEnd, solvingStep, p);
+closeWaitbar ();
 drawPlot (handles);
 
 function drawPlot (handles)
@@ -684,7 +715,6 @@ else
     solvingIterationCount = n;
     solved = 0;
 end
-
 
 % --------------------------------------------------------------------
 function menuSave_Callback(hObject, eventdata, handles)
