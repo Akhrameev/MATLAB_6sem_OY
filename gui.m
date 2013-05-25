@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 26-May-2013 00:53:02
+% Last Modified by GUIDE v2.5 26-May-2013 02:39:20
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -943,17 +943,32 @@ popupMenuHandle = findobj(gcbf,'Tag','example');
 set (popupMenuHandle, 'Value', index);
 initExample (currentExample, handles);
 
-% --------------------------------------------------------------------
-function GraphicsMenuItem_Callback(hObject, eventdata, handles)
-% hObject    handle to GraphicsMenuItem (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+
+function gotoGraphics (handles, checksolved)
 global graphicsData solved;
-if (solved)
+if (~checksolved || solved)
+    setShowSystemForSolving ('off', handles)
     filename = 'Settings/tmp.png';
     F = getframe(handles.plotter);
     image(F.cdata);
     imwrite(F.cdata, filename);
     graphicsData = filename;
+else
+    graphicsData = 0;
 end
 graphicsViewer;
+
+% --------------------------------------------------------------------
+function GraphicsMenuItem_Callback(hObject, eventdata, handles)
+% hObject    handle to GraphicsMenuItem (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+gotoGraphics (handles, 1);
+
+
+% --------------------------------------------------------------------
+function SaveGraphicMenuItem_Callback(hObject, eventdata, handles)
+% hObject    handle to SaveGraphicMenuItem (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+gotoGraphics (handles, 0);
