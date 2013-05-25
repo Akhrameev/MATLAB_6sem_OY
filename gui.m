@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 25-May-2013 18:43:37
+% Last Modified by GUIDE v2.5 25-May-2013 21:15:41
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -132,25 +132,6 @@ fid_r = fopen(filename, 'r');
 C = textscan(fid_r, '%s');
 propertyList = C{1};
 
-
-%function to get all files in Directory (from stackoverflow)
-function fileList = getAllFiles(dirName)
-
-dirData = dir(dirName);      %# Get the data for the current directory
-dirIndex = [dirData.isdir];  %# Find the index for directories
-fileList = {dirData(~dirIndex).name};  %'# Get a list of the files
-if ~isempty(fileList)
-    fileList = cellfun(@(x) fullfile(dirName,x),...  %# Prepend path to files
-                     fileList,'UniformOutput',false);
-end
-subDirs = {dirData(dirIndex).name};  %# Get a list of the subdirectories
-validIndex = ~ismember(subDirs,{'.','..'});  %# Find index of subdirectories
-                                             %#   that are not '.' or '..'
-for iDir = find(validIndex)                  %# Loop over valid subdirectories
-    nextDir = fullfile(dirName,subDirs{iDir});    %# Get the subdirectory path
-    fileList = [fileList; getAllFiles(nextDir)];  %# Recursively call getAllFiles
-end
-
 % --- Executes on button press in pushbutton1.
 function pushbutton1_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
@@ -171,10 +152,6 @@ switch (state)
     otherwise
         method = @ode45;
 end;
-
-function errorAlert (message)
-setappdata(0, 'UserData', message);
-alert;
 
 % --- function to compute 
 function [ ] = compute (handles)
@@ -778,9 +755,9 @@ examplesList = getExamples ();
 listSize = size(examplesList);
 listSize = listSize(2);
 defaultName = strcat ('Examples/example', num2str(listSize + 1));
-filename = uiputfile('Examples/*.mat','Save example', defaultName);
+filename = uiputfile('Examples/*.mat','Сохранить пример', defaultName);
 filename = strcat ('Examples/', filename);
-fid = fopen(filename,'w');
+fid = fopen (filename, 'w');
 fclose (fid);
 save(filename,'saveStructure');
 updateExamplesList (handles);
@@ -791,3 +768,16 @@ function tableResult_Callback(hObject, eventdata, handles)
 % hObject    handle to tableResult (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global Y dataInTable;
+dataInTable = Y;
+tableResult;
+
+
+% --------------------------------------------------------------------
+function OpenTableEditor_Callback(hObject, eventdata, handles)
+% hObject    handle to OpenTableEditor (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataInTable;
+dataInTable = cell (10, 10);
+tableResult;
