@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 24-May-2013 19:56:41
+% Last Modified by GUIDE v2.5 25-May-2013 15:53:19
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -57,37 +57,56 @@ progressbarOK = 0;
 handles.output = hObject;
 % Update handles structure
 guidata(hObject, handles);
+createWaitbar (handles);
 initExample (currentExample, handles);
 
 % UIWAIT makes gui wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
+function createWaitbar (handles)
+global jProgressbar progressbarOK jInternalProgressbar;
+global solvingIterationCount solvingIterationCurrent;
+if (progressbarOK)
+    
+else
+    try
+        externalProgressbar = handles.externalProgressbar;
+        internalProgressbar = handles.internalProgressbar;
+        jProgressbarPosition = get (externalProgressbar, 'Position');
+        jInternalProgressbarPosition = get (internalProgressbar, 'Position');
+        jProgressbar = jcontrol(handles.figure1, javax.swing.JProgressBar(),'Position', jProgressbarPosition, 'Visible', 'off'); 
+        jProgressbar.setMaximum (solvingIterationCount);
+        jProgressbar.setMinimum (0);
+        jProgressbar.setValue (solvingIterationCurrent);
+        jProgressbar.setBorderPainted (true);
+        jProgressbar.setStringPainted (true);
+        jInternalProgressbar = jcontrol (handles.figure1, javax.swing.JProgressBar(), 'Position', jInternalProgressbarPosition, 'Visible', 'off');        
+        jInternalProgressbar.setIndeterminate (true);
+        progressbarOK = 1;
+    catch
+        jProgressbar = 0;
+        jInternalProgressbar = 0;
+        progressbarOK = 0;
+    end;
+end
 
-function showWaitbar (handles)
-global jProgressbar wait progressbarOK;
+function showWaitbar ()
+global jProgressbar wait progressbarOK jInternalProgressbar;
 global solvingIterationCount solvingIterationCurrent;
 if (progressbarOK)
     jProgressbar.setVisible (true);
     jProgressbar.setMaximum (solvingIterationCount);
     jProgressbar.setValue (solvingIterationCurrent);
+    jInternalProgressbar.setVisible (true);
 else
-    try
-        jProgressbar = jcontrol(handles.figure1, javax.swing.JProgressBar(),'Position', [0.2297564186965108 0.05507246376811594 0.42857142857142855 0.07391304347826087]); 
-        jProgressbar.setMaximum (solvingIterationCount);
-        jProgressbar.setMinimum (0);
-        jProgressbar.setValue (solvingIterationCurrent);
-        jProgressbar.setVisible (true);
-        progressbarOK = 1;
-    catch
-        wait = waitbar (solvingIterationCurrent/solvingIterationCount, 'In progress');
-        progressbarOK = 0;
-    end; 
+    wait = waitbar (solvingIterationCurrent/solvingIterationCount, 'In progress'); 
 end
 
 function closeWaitbar ()
-global jProgressbar wait progressbarOK;
+global jProgressbar wait progressbarOK jInternalProgressbar;
 if (progressbarOK)
     jProgressbar.setVisible (false);
+    jInternalProgressbar.setVisible (false);
 else
     close (wait);
 end;
@@ -156,7 +175,7 @@ end;
 function [ ] = compute (handles)
 global solvingTimeBegin solvingTimeEnd solvingStep;
 global solvingIterationCount systemForSolvingDimension;
-global systemForSolving p Y;
+global systemForSolving p Y solvingIterationCurrent;
 if ((solvingTimeEnd - solvingTimeBegin) * solvingStep < 0)
     errordlg('Error! Incorrect input (time_begin, time_end or step)','OK');
     return;
@@ -173,7 +192,8 @@ p0 = zeros (1, systemForSolvingDimension);
 for i = 1 : systemForSolvingDimension
    p0 (i) = systemForSolving {i, 3}; 
 end
-showWaitbar (handles);
+solvingIterationCurrent = 0;
+showWaitbar ();
 p = external (p0, solvingIterationCount);
 Y = solveDifferential (systemForSolvingDimension, solvingTimeBegin, solvingTimeEnd, solvingStep, p);
 closeWaitbar ();
@@ -744,6 +764,3 @@ fid = fopen(filename,'w');
 fclose (fid);
 save(filename,'saveStructure');
 updateExamplesList (handles);
-
-
-
