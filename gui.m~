@@ -78,7 +78,8 @@ else
         jProgressbar.setMaximum (solvingIterationCount);
         jProgressbar.setMinimum (0);
         jProgressbar.setValue (solvingIterationCurrent);
-        
+        jProgressbar.setBorderPainted (true);
+        jProgressbar.setStringPainted (true);
         jInternalProgressbar = jcontrol (handles.figure1, javax.swing.JProgressBar(), 'Position', jInternalProgressbarPosition, 'Visible', 'off');        
         jInternalProgressbar.setIndeterminate (true);
         progressbarOK = 1;
@@ -296,8 +297,15 @@ if (n <= 0 || isnan(n) || floor (n) < n)
 else
     systemForSolvingDimension = n;
     solved = 0;
+    d = get (handles.sdu, 'Data');
+    dSize = size (d);
+    if (dSize(1) > systemForSolvingDimension)
+        d = d (1:systemForSolvingDimension,:);
+    elseif (dSize(1) < systemForSolvingDimension)
+        cat (  
+    end
+    set (handles.sdu, 'Data', cell (systemForSolvingDimension, 4));
 end
-set (handles.sdu, 'Data', cell (systemForSolvingDimension, 4));
 
 % --- Executes during object creation, after setting all properties.
 function sys_dim_CreateFcn(hObject, eventdata, handles)
@@ -553,6 +561,11 @@ Xi = 1;
 Xj = 1;
 if (eventdata.Indices(2) <= 3)
     solved = 0;
+end
+d = get(hObject,'Data');
+if eventdata.Indices(2) < 3
+    d{eventdata.Indices(1),eventdata.Indices(2)} = eventdata.EditData;
+    set(hObject,'Data',d);
 end
 
 

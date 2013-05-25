@@ -297,8 +297,15 @@ if (n <= 0 || isnan(n) || floor (n) < n)
 else
     systemForSolvingDimension = n;
     solved = 0;
+    d = get (handles.sdu, 'Data');
+    dSize = size (d);
+    if (dSize(1) > systemForSolvingDimension)
+        d = d (1:systemForSolvingDimension,:);
+    elseif (dSize(1) < systemForSolvingDimension)
+        d = cat (systemForSolvingDimension - dSize(1), d, {'' '' 0 [true]});  
+    end
+    set (handles.sdu, 'Data', d);
 end
-set (handles.sdu, 'Data', cell (systemForSolvingDimension, 4));
 
 % --- Executes during object creation, after setting all properties.
 function sys_dim_CreateFcn(hObject, eventdata, handles)
@@ -554,6 +561,11 @@ Xi = 1;
 Xj = 1;
 if (eventdata.Indices(2) <= 3)
     solved = 0;
+end
+d = get(hObject,'Data');
+if eventdata.Indices(2) < 3
+    d{eventdata.Indices(1),eventdata.Indices(2)} = eventdata.EditData;
+    set(hObject,'Data',d);
 end
 
 
