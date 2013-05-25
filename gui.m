@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 25-May-2013 22:52:53
+% Last Modified by GUIDE v2.5 25-May-2013 23:46:29
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -198,6 +198,7 @@ global systemForSolving Y;
 global systemForSolvingDimension;
 global lineStyle lineColor;
 global Xi Xj ji;
+global ScaleX ScaleY;
 global solvingTimeBegin solvingTimeEnd solvingStep;
 cla reset;
 hold all;
@@ -220,6 +221,18 @@ else
     end
     xlabel('t');
     ylabel('x');
+    if ((ScaleX ~= 1) || (ScaleY ~= 1))
+        SX = ScaleX;
+        SY = ScaleY;
+        Xl = get(gca,'XLim');
+        Yl = get(gca,'YLim');
+        xl1 = (Xl(1)+Xl(2))/2 - SY*(Xl(2)-Xl(1))/(2*SX);
+        xl2 = (Xl(1)+Xl(2))/2 + SY*(Xl(2)-Xl(1))/(2*SX);
+        yl1 = (Yl(1)+Yl(2))/2 - SY*(Yl(2)-Yl(1))/(2*SX);
+        yl2 = (Yl(1)+Yl(2))/2 + SY*(Yl(2)-Yl(1))/(2*SX);
+        xlim([xl1 xl2]);
+        ylim([yl1 yl2]);
+    end
 end
 solved (1, handles);
 setShowSystemForSolving ('off', handles);
@@ -232,7 +245,7 @@ if (solved)
     value = 'on';
 end
 set (handles.tableResult, 'Visible', value);
-set (handles.text22,      'Visible', value);
+set (handles.text23,      'Visible', value);
 set (handles.J_x,         'Visible', value);
 set (handles.computeJx,   'Visible', value);
 
@@ -827,3 +840,76 @@ cla reset;
 plot(T,F);
 xlabel('t');
 ylabel('J(x(t))');
+
+
+
+function SX_Callback(hObject, eventdata, handles)
+% hObject    handle to SX (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global ScaleX;
+n = str2double (get (hObject,'String'));
+if (isnan(n) || n <= 0) 
+    alertError ('Ошибка! Неверный масшат по горизонтальной оси!');
+    set (hObject, 'String', num2str (ScaleX));
+else
+    ScaleX = n;
+end
+% Hints: get(hObject,'String') returns contents of SX as text
+%        str2double(get(hObject,'String')) returns contents of SX as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function SX_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to SX (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+global ScaleX;
+ScaleX = 1;
+set (hObject, 'String', num2str (ScaleX));
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function SY_Callback(hObject, eventdata, handles)
+% hObject    handle to SY (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global ScaleY;
+n = str2double (get (hObject,'String'));
+if (isnan(n) || n <= 0) 
+    alertError ('Ошибка! Неверный масшат по вертикальной оси!');
+    set (hObject, 'String', num2str (ScaleY));
+else
+    ScaleY = n;
+end
+% Hints: get(hObject,'String') returns contents of SY as text
+%        str2double(get(hObject,'String')) returns contents of SY as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function SY_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to SY (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+global ScaleY;
+ScaleY = 1;
+set (hObject, 'String', num2str (ScaleY));
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Executes on button press in scale11.
+function scale11_Callback(hObject, eventdata, handles)
+% hObject    handle to scale11 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global ScaleX ScaleY;
+ScaleX = 1;
+ScaleY = 1;
+set (handles.SX, 'String', num2str (ScaleX));
+set (handles.SY, 'String', num2str (ScaleY));

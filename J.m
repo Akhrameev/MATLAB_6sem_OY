@@ -1,6 +1,6 @@
 function [j] = J(x)
 try
-	j = x(1)+2;
+	j = 0;
 catch
 	errorAlertJ;
 end
