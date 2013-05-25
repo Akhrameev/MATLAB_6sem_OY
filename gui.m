@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 25-May-2013 23:46:29
+% Last Modified by GUIDE v2.5 26-May-2013 00:05:26
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -389,7 +389,8 @@ function example_CreateFcn(hObject, eventdata, handles)
 global currentExample;
 examplesList = updateExamplesList (handles);
 currentExample = examplesList{1};
-handles.example.set ('Value', currentExample);
+popupMenuHandle = findobj(gcbf,'Tag','example');
+set (popupMenuHandle, 'Value', 1);
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
@@ -913,3 +914,23 @@ ScaleX = 1;
 ScaleY = 1;
 set (handles.SX, 'String', num2str (ScaleX));
 set (handles.SY, 'String', num2str (ScaleY));
+
+
+% --------------------------------------------------------------------
+function OpenMenuItem_Callback(hObject, eventdata, handles)
+% hObject    handle to OpenMenuItem (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global currentExample;
+filename = uigetfile ('Examples/*mat', 'Открыть пример');
+filename = strcat ('Examples/', filename);
+examplesList = updateExamplesList (handles);
+index = strmatch (filename, examplesList, 'exact');
+if isempty(index)
+    alertError ('Файл не был найден в списке примеров. Воспользуйтесь списком для загрузки примера.');
+    return;
+end
+currentExample = filename;
+popupMenuHandle = findobj(gcbf,'Tag','example');
+set (popupMenuHandle, 'Value', index);
+initExample (currentExample, handles);
