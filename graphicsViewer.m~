@@ -60,23 +60,30 @@ guidata(hObject, handles);
 set (hObject, 'Name', 'Просмотр графики');
 % UIWAIT makes graphicsViewer wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
-set(handles.axes1, ...
+set (handles.axes1, ...
     'Visible', 'off', ...
     'YDir'   , 'reverse');
-loadGraphics ();
+axis ('image');
+loadGraphics (handles);
 
-function loadGraphics ()
+function loadGraphics (handles)
 global graphicsData;
+tempPath = 'Settings/tmp.png';
+defaultName = 'Просмотр графики ';
 if (graphicsData ~= 0)
     imshow (graphicsData);
-    defaultName = 'Просмотр графики ';
-    name = strcat (defaultName, '(', graphicsData, ')');
-    set (hObject, 'Name', name);
-elseif (exist ('Settings/tmp.png', 'file')
+    name = defaultName;
+    if (strcmp (tempPath,graphicsData) == 0) 
+        name = strcat (defaultName, '    (', graphicsData, ')');
+    end
+    set (handles.figure1, 'Name', name);
+elseif (exist (tempPath, 'file'))
     try
-        imshow (
+        imshow (tempPath);
+        set (handles.figure1, 'Name', defaultName);
+        graphicsData = tempPath;
     catch
-        
+        graphicsData = 0;
     end
 end
 
@@ -102,7 +109,7 @@ if (filename == 0)
 end
 filename = strcat ('Graphics/', filename);
 graphicsData = filename;
-loadGraphics ();
+loadGraphics (handles);
 
 % --------------------------------------------------------------------
 function SaveMenuItem_Callback(hObject, eventdata, handles)
@@ -119,8 +126,9 @@ if (filename == 0)
 end
 filename = strcat ('Graphics/', filename);
 F = getframe(handles.axes1);
-image(F.cdata);
+tmp = image(F.cdata);
 imwrite(F.cdata, filename);
+
 
 % --------------------------------------------------------------------
 function CloseMenuItem_Callback(hObject, eventdata, handles)

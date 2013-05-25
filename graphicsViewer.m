@@ -60,9 +60,11 @@ guidata(hObject, handles);
 set (hObject, 'Name', 'Просмотр графики');
 % UIWAIT makes graphicsViewer wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
-set(handles.axes1, ...
+set (handles.axes1, ...
     'Visible', 'off', ...
     'YDir'   , 'reverse');
+axis ('image');
+axis ('off');
 loadGraphics (handles);
 
 function loadGraphics (handles)
@@ -125,8 +127,11 @@ if (filename == 0)
 end
 filename = strcat ('Graphics/', filename);
 F = getframe(handles.axes1);
-image(F.cdata);
+tmp = image(F.cdata);
+axis ('image');
+axis ('off');
 imwrite(F.cdata, filename);
+
 
 % --------------------------------------------------------------------
 function CloseMenuItem_Callback(hObject, eventdata, handles)

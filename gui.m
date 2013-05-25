@@ -950,7 +950,9 @@ if (~checksolved || solved)
     setShowSystemForSolving ('off', handles)
     filename = 'Settings/tmp.png';
     F = getframe(handles.plotter);
-    image(F.cdata);
+    tmp = image(F.cdata);
+    axis ('image');
+    axis ('off');
     imwrite(F.cdata, filename);
     graphicsData = filename;
 else
