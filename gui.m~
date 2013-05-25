@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 26-May-2013 00:05:26
+% Last Modified by GUIDE v2.5 26-May-2013 00:53:02
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -925,7 +925,19 @@ global currentExample;
 filename = uigetfile ('Examples/*mat', 'Открыть пример');
 filename = strcat ('Examples/', filename);
 examplesList = updateExamplesList (handles);
-index = strmatch (filename, examples
+index = strmatch (filename, examplesList, 'exact');
+if isempty(index)
+    alertError ('Файл не был найден в списке примеров. Воспользуйтесь списком для загрузки примера.');
+    return;
+end
+currentExample = filename;
 popupMenuHandle = findobj(gcbf,'Tag','example');
-set (popupMenuHandle, 'Value', 1);
+set (popupMenuHandle, 'Value', index);
 initExample (currentExample, handles);
+
+% --------------------------------------------------------------------
+function GraphicsMenuItem_Callback(hObject, eventdata, handles)
+% hObject    handle to GraphicsMenuItem (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global graphicsData;

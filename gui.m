@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 26-May-2013 00:05:26
+% Last Modified by GUIDE v2.5 26-May-2013 00:53:02
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -51,9 +51,10 @@ function gui_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to gui (see VARARGIN)
-global currentExample progressbarOK;
+global currentExample progressbarOK graphicsData;
 % Choose default command line output for gui
 progressbarOK = 0;
+graphicsData = 0;
 handles.output = hObject;
 % Update handles structure
 guidata(hObject, handles);
@@ -934,3 +935,18 @@ currentExample = filename;
 popupMenuHandle = findobj(gcbf,'Tag','example');
 set (popupMenuHandle, 'Value', index);
 initExample (currentExample, handles);
+
+% --------------------------------------------------------------------
+function GraphicsMenuItem_Callback(hObject, eventdata, handles)
+% hObject    handle to GraphicsMenuItem (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global graphicsData solved;
+if (solved)
+    filename = 'Settings/tmp.png';
+    F = getframe(handles.plotter);
+    image(F.cdata);
+    imwrite(F.cdata, filename);
+    graphicsData = filename;
+end
+graphicsViewer;
