@@ -63,26 +63,20 @@ set (hObject, 'Name', 'Просмотр графики');
 set(handles.axes1, ...
     'Visible', 'off', ...
     'YDir'   , 'reverse');
-loadGraphics (handles);
+loadGraphics ();
 
-function loadGraphics (handles)
+function loadGraphics ()
 global graphicsData;
-tempPath = 'Settings/tmp.png';
-defaultName = 'Просмотр графики ';
 if (graphicsData ~= 0)
     imshow (graphicsData);
-    name = defaultName;
-    if (strcmp (tempPath,graphicsData) == 0) 
-        name = strcat (defaultName, '    (', graphicsData, ')');
-    end
-    set (handles.figure1, 'Name', name);
-elseif (exist (tempPath, 'file'))
+    defaultName = 'Просмотр графики ';
+    name = strcat (defaultName, '(', graphicsData, ')');
+    set (hObject, 'Name', name);
+elseif (exist ('Settings/tmp.png', 'file')
     try
-        imshow (tempPath);
-        set (handles.figure1, 'Name', defaultName);
-        graphicsData = tempPath;
+        imshow (
     catch
-        graphicsData = 0;
+        
     end
 end
 
@@ -108,7 +102,7 @@ if (filename == 0)
 end
 filename = strcat ('Graphics/', filename);
 graphicsData = filename;
-loadGraphics (handles);
+loadGraphics ();
 
 % --------------------------------------------------------------------
 function SaveMenuItem_Callback(hObject, eventdata, handles)

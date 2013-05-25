@@ -246,6 +246,7 @@ if (solved)
     value = 'on';
 end
 set (handles.tableResult, 'Visible', value);
+set (handles.text22,      'Visible', value);
 set (handles.text23,      'Visible', value);
 set (handles.J_x,         'Visible', value);
 set (handles.computeJx,   'Visible', value);
@@ -771,6 +772,9 @@ listSize = size(examplesList);
 listSize = listSize(2);
 defaultName = strcat ('Examples/example', num2str(listSize + 1));
 filename = uiputfile('Examples/*.mat','Сохранить пример', defaultName);
+if (filename == 0)
+    return;
+end
 filename = strcat ('Examples/', filename);
 fid = fopen (filename, 'w');
 fclose (fid);
@@ -924,6 +928,9 @@ function OpenMenuItem_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global currentExample;
 filename = uigetfile ('Examples/*mat', 'Открыть пример');
+if (filename == 0)
+    return;
+end
 filename = strcat ('Examples/', filename);
 examplesList = updateExamplesList (handles);
 index = strmatch (filename, examplesList, 'exact');

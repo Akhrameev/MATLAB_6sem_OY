@@ -96,6 +96,9 @@ function OpenMenuItem_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global dataInTable;
 filename = uigetfile ('Tables/*mat', 'Открыть таблицу');
+if (filename == 0)
+    return;
+end
 filename = strcat ('Tables/', filename);
 load (filename);
 loadData (handles);
@@ -111,6 +114,9 @@ listSize = size(tableList);
 listSize = listSize(2);
 defaultName = strcat ('Tables/table', num2str(listSize + 1));
 filename = uiputfile('Tables/*.mat','Сохранить таблицу', defaultName);
+if (filename == 0)
+    return;
+end
 filename = strcat ('Tables/', filename);
 fid = fopen (filename, 'w');
 fclose (fid);
