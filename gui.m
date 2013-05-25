@@ -60,6 +60,7 @@ handles.output = hObject;
 guidata(hObject, handles);
 set (hObject, 'Name', 'Практикум. 6 семестр. Решение краевых задач методом продолжения. Исходный код: https://github.com/Akhrameev/MATLAB_6sem_OY');
 createWaitbar (handles);
+set(0,'DefaultFigurePaperPositionMode','auto');
 initExample (currentExample, handles);
 
 % UIWAIT makes gui wait for user response (see UIRESUME)

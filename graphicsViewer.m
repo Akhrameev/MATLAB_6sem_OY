@@ -22,7 +22,7 @@ function varargout = graphicsViewer(varargin)
 
 % Edit the above text to modify the response to help graphicsViewer
 
-% Last Modified by GUIDE v2.5 26-May-2013 01:02:18
+% Last Modified by GUIDE v2.5 26-May-2013 03:34:21
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -144,3 +144,13 @@ function CloseMenuItem_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 delete (handles.figure1);
+
+
+% --------------------------------------------------------------------
+function PrintMenuItem_Callback(hObject, eventdata, handles)
+% hObject    handle to PrintMenuItem (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+figure_handle = isolate_axes(handles.axes1);
+printpreview(figure_handle); % Add the correct print options here
+close(figure_handle);
