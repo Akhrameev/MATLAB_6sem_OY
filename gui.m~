@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 25-May-2013 18:43:37
+% Last Modified by GUIDE v2.5 25-May-2013 22:52:53
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -57,6 +57,7 @@ progressbarOK = 0;
 handles.output = hObject;
 % Update handles structure
 guidata(hObject, handles);
+set (hObject, 'Name', 'Практикум. 6 семестр. Решение краевых задач. Исходный код: https://github.com/Akhrameev/MATLAB_6sem_OY');
 createWaitbar (handles);
 initExample (currentExample, handles);
 
@@ -102,6 +103,8 @@ else
     wait = waitbar (solvingIterationCurrent/solvingIterationCount, 'In progress'); 
 end
 
+function 
+
 function closeWaitbar ()
 global jProgressbar wait progressbarOK jInternalProgressbar;
 if (progressbarOK)
@@ -131,25 +134,6 @@ fid_r = fopen(filename, 'r');
 C = textscan(fid_r, '%s');
 propertyList = C{1};
 
-
-%function to get all files in Directory (from stackoverflow)
-function fileList = getAllFiles(dirName)
-
-dirData = dir(dirName);      %# Get the data for the current directory
-dirIndex = [dirData.isdir];  %# Find the index for directories
-fileList = {dirData(~dirIndex).name};  %'# Get a list of the files
-if ~isempty(fileList)
-    fileList = cellfun(@(x) fullfile(dirName,x),...  %# Prepend path to files
-                     fileList,'UniformOutput',false);
-end
-subDirs = {dirData(dirIndex).name};  %# Get a list of the subdirectories
-validIndex = ~ismember(subDirs,{'.','..'});  %# Find index of subdirectories
-                                             %#   that are not '.' or '..'
-for iDir = find(validIndex)                  %# Loop over valid subdirectories
-    nextDir = fullfile(dirName,subDirs{iDir});    %# Get the subdirectory path
-    fileList = [fileList; getAllFiles(nextDir)];  %# Recursively call getAllFiles
-end
-
 % --- Executes on button press in pushbutton1.
 function pushbutton1_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
@@ -170,10 +154,6 @@ switch (state)
     otherwise
         method = @ode45;
 end;
-
-function errorAlert (message)
-setappdata(0, 'UserData', message);
-alert;
 
 % --- function to compute 
 function [ ] = compute (handles)
@@ -243,6 +223,9 @@ if (solved)
     value = 'on';
 end
 set (handles.tableResult, 'Visible', value);
+set (handles.text22,      'Visible', value);
+set (handles.J_x,         'Visible', value);
+set (handles.computeJx,   'Visible', value);
 
 % --- function to init data in table
 function [ ] = initExample (file, handles)
@@ -509,7 +492,7 @@ if ((num >= 1) && (num <= systemForSolvingDimension))
     Xi = num;
 else
     set (hObject, 'String', 'NaN');
-    errorAlert('Внимание! Ошибка заполнения Xj');
+    errorAlert('Внимание! Ошибка заполнения Xi');
 end
 % Hints: get(hObject,'String') returns contents of Xi as text
 %        str2double(get(hObject,'String')) returns contents of Xi as a double
@@ -583,20 +566,6 @@ if eventdata.Indices(2) < 3
     d{eventdata.Indices(1),eventdata.Indices(2)} = eventdata.EditData;
     set(hObject,'Data',d);
 end
-
-
-% -------------------------------------------------------------------
-function menuFileManual_Callback(hObject, eventdata, handles)
-% hObject    handle to menuFileManual (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --------------------------------------------------------------------
-function menuHelpManual_Callback(hObject, eventdata, handles)
-% hObject    handle to menuHelpManual (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 % --------------------------------------------------------------------
 function menuHelp_Callback(hObject, eventdata, handles)
@@ -777,9 +746,9 @@ examplesList = getExamples ();
 listSize = size(examplesList);
 listSize = listSize(2);
 defaultName = strcat ('Examples/example', num2str(listSize + 1));
-filename = uiputfile('Examples/*.mat','Save example', defaultName);
+filename = uiputfile('Examples/*.mat','Сохранить пример', defaultName);
 filename = strcat ('Examples/', filename);
-fid = fopen(filename,'w');
+fid = fopen (filename, 'w');
 fclose (fid);
 save(filename,'saveStructure');
 updateExamplesList (handles);
@@ -790,3 +759,60 @@ function tableResult_Callback(hObject, eventdata, handles)
 % hObject    handle to tableResult (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+global Y dataInTable;
+dataInTable = Y;
+tableResult;
+
+
+% --------------------------------------------------------------------
+function OpenTableEditor_Callback(hObject, eventdata, handles)
+% hObject    handle to OpenTableEditor (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataInTable;
+dataInTable = cell (10, 10);
+tableResult;
+
+
+
+function J_x_Callback(hObject, eventdata, handles)
+% hObject    handle to J_x (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of J_x as text
+%        str2double(get(hObject,'String')) returns contents of J_x as a double
+createJ (get (hObject, 'String'));
+
+% --- Executes during object creation, after setting all properties.
+function J_x_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to J_x (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+set (hObject, 'String', '0');
+createJ ('0');
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in computeJx.
+function computeJx_Callback(hObject, eventdata, handles)
+% hObject    handle to computeJx (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global Y;
+global solvingTimeBegin solvingTimeEnd solvingStep;
+T = solvingTimeBegin:solvingStep:solvingTimeEnd;
+N = length(T);
+F = zeros(N,1);
+for i=1:N
+    F(i) = J(Y(i,:));
+end
+cla reset;
+plot(T,F);
+xlabel('t');
+ylabel('J(x(t))');

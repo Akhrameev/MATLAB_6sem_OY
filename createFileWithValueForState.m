@@ -46,6 +46,8 @@ elseif (state == fileCreationStates.sInternal)
             fprintf (fid,'\t dx(%u) = %s;\n',i * valueSize + j, parse (char (y (j))));
         end
     end
+elseif (state == fileCreationStates.sJ)
+	fprintf(fid,'\tj = %s;\n',parse(value));
 end
 fprintf (fid, footerForState (state));
 fclose (fid);
@@ -65,6 +67,8 @@ switch (state)
         fileName = 'systemDifferential.m';
     case fileCreationStates.sInternal
         fileName = 'Internal.m';
+    case fileCreationStates.sJ
+    	fileName = 'J.m';
     otherwise
         fileName = 'error.m';
 end
@@ -84,6 +88,8 @@ switch (state)
         header = 'function [dx] = systemDifferential(t,x)\n';
     case fileCreationStates.sInternal
         header = 'function [dx] = Internal(t,x)\n';
+    case fileCreationStates.sJ
+    	header = 'function [j] = J(x)\n';
     otherwise
         header = 'errorHeader';
 end
@@ -103,6 +109,8 @@ switch (state)
         initialization = '\n';
     case fileCreationStates.sInternal
         initialization = '\n';
+    case fileCreationStates.sJ
+        initialization = 'try\n';
     otherwise
         initialization = 'errorInitialization = [';
 end
@@ -111,13 +119,9 @@ end
 function [footer] = footerForState (state)
 switch (state)
     case fileCreationStates.sA
-        %fid = fopen('Settings/semiquote.txt','r');
-        %semiquote = textscan(fid, '%s');
-        %fclose (fid);
-        %semiquote = semiquote {1};
-        %footer = strcat ('catch\n\terrorAlertSystem;\nend');
-        %footer = footer {1};
         footer = 'catch\n\terrorAlertSystem;\nend';
+    case fileCreationStates.sJ
+    	footer = 'catch\n\terrorAlertJ;\nend';
     otherwise
         footer = 'end';
 end

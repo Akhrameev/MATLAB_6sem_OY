@@ -78,6 +78,8 @@ set (hObject, 'Name', 'Ошибка!');
  tmp = getappdata(0,'UserData');
  if (tmp == 666)
      set (handles.message, 'String', 'Ошибка! Проверьте корректность данных краевой задачи!');
+ elseif (tmp == 667)
+     set (handles.message, 'String', 'Ошибка! Проверьте корректность записи функционала!');
  elseif (tmp)
      set (handles.message, 'String', tmp);
  end

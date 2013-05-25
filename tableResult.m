@@ -57,7 +57,7 @@ handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
-set (hObject, 'Name', 'Таблица результатов');
+set (hObject, 'Name', 'Редактор таблиц');
 % UIWAIT makes tableResult wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 loadData (handles);

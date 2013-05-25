@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 25-May-2013 21:15:41
+% Last Modified by GUIDE v2.5 25-May-2013 22:52:53
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -101,6 +101,17 @@ if (progressbarOK)
     jInternalProgressbar.setVisible (true);
 else
     wait = waitbar (solvingIterationCurrent/solvingIterationCount, 'In progress'); 
+end
+
+function showCustomWaitbar (value, maximum)
+global jProgressbar wait progressbarOK jInternalProgressbar;
+if (progressbarOK)
+    jProgressbar.setVisible (true);
+    jProgressbar.setMaximum (maximum);
+    jProgressbar.setValue (value);
+    jInternalProgressbar.setVisible (true);
+else
+    wait = waitbar (value/maximum, 'In progress'); 
 end
 
 function closeWaitbar ()
@@ -221,6 +232,9 @@ if (solved)
     value = 'on';
 end
 set (handles.tableResult, 'Visible', value);
+set (handles.text22,      'Visible', value);
+set (handles.J_x,         'Visible', value);
+set (handles.computeJx,   'Visible', value);
 
 % --- function to init data in table
 function [ ] = initExample (file, handles)
@@ -562,20 +576,6 @@ if eventdata.Indices(2) < 3
     set(hObject,'Data',d);
 end
 
-
-% -------------------------------------------------------------------
-function menuFileManual_Callback(hObject, eventdata, handles)
-% hObject    handle to menuFileManual (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-
-% --------------------------------------------------------------------
-function menuHelpManual_Callback(hObject, eventdata, handles)
-% hObject    handle to menuHelpManual (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
 % --------------------------------------------------------------------
 function menuHelp_Callback(hObject, eventdata, handles)
 % hObject    handle to menuHelpManual (see GCBO)
@@ -781,3 +781,49 @@ function OpenTableEditor_Callback(hObject, eventdata, handles)
 global dataInTable;
 dataInTable = cell (10, 10);
 tableResult;
+
+
+
+function J_x_Callback(hObject, eventdata, handles)
+% hObject    handle to J_x (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of J_x as text
+%        str2double(get(hObject,'String')) returns contents of J_x as a double
+createJ (get (hObject, 'String'));
+
+% --- Executes during object creation, after setting all properties.
+function J_x_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to J_x (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+set (hObject, 'String', '0');
+createJ ('0');
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in computeJx.
+function computeJx_Callback(hObject, eventdata, handles)
+% hObject    handle to computeJx (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global Y;
+global solvingTimeBegin solvingTimeEnd solvingStep;
+T = solvingTimeBegin:solvingStep:solvingTimeEnd;
+N = length(T);
+F = zeros(N,1);
+for i=1:N
+    showCustomWaitbar (i, N);
+    F(i) = J(Y(i,:));
+end
+closeWaitbar ();
+cla reset;
+plot(T,F);
+xlabel('t');
+ylabel('J(x(t))');
