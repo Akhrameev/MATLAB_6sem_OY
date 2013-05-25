@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 25-May-2013 15:53:19
+% Last Modified by GUIDE v2.5 25-May-2013 18:43:37
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -180,6 +180,7 @@ if ((solvingTimeEnd - solvingTimeBegin) * solvingStep < 0)
     errordlg('Error! Incorrect input (time_begin, time_end or step)','OK');
     return;
 end
+systemForSolving = get(handles.sdu,'Data');
 x = sym ('x', [1 systemForSolvingDimension]);
 y = sym ('y', [1 systemForSolvingDimension]);
 createA (parse (char (jacobian (systemForSolving (:, 1), x))));
@@ -203,7 +204,7 @@ function drawPlot (handles)
 global systemForSolving Y;
 global systemForSolvingDimension;
 global lineStyle lineColor;
-global Xi Xj ji solved;
+global Xi Xj ji;
 global solvingTimeBegin solvingTimeEnd solvingStep;
 cla reset;
 hold all;
@@ -227,8 +228,17 @@ else
     xlabel('t');
     ylabel('x');
 end
-solved = 1;
+solved (1, handles);
 setShowSystemForSolving ('off', handles);
+
+function solved (val, handles)
+global solved;
+solved = val;
+value = 'off';
+if (solved)
+    value = 'on';
+end
+set (handles.tableResult, 'Visible', value);
 
 % --- function to init data in table
 function [ ] = initExample (file, handles)
@@ -240,6 +250,8 @@ global solvingIterationCount;
 global solvingTimeStarred;
 global solvingExternalMethod; global solvingInternalMethod; 
 global solvingExternalEpsilon; global solvingInternalEpsilon;
+solved (0, handles);
+
 load (file);
 sS = saveStructure;
 fR = sS.fieldRecord;
@@ -288,7 +300,6 @@ function sys_dim_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 global systemForSolvingDimension;
-global solved;
 n = str2double (get(hObject, 'String'));
 if (n <= 0 || isnan(n) || floor (n) < n)
     errordlg('Error! systemForSolvingDimension is incorrect.','OK');
@@ -296,7 +307,7 @@ if (n <= 0 || isnan(n) || floor (n) < n)
     set (hObject, 'String', s); 
 else
     systemForSolvingDimension = n;
-    solved = 0;
+    solved (0, handles);
     d = get (handles.sdu, 'Data');
     dSize = size (d);
     if (dSize(1) > systemForSolvingDimension)
@@ -556,11 +567,11 @@ function sdu_CellEditCallback(hObject, eventdata, handles)
 %	NewData: EditData or its converted form set on the Data property. Empty if Data was not changed
 %	Error: error string when failed to convert EditData to appropriate value for Data
 % handles    structure with handles and user data (see GUIDATA)
-global Xi Xj solved;
+global Xi Xj;
 Xi = 1;
 Xj = 1;
 if (eventdata.Indices(2) <= 3)
-    solved = 0;
+    solved (0, handles);
 end
 d = get(hObject,'Data');
 if eventdata.Indices(2) < 3
@@ -613,7 +624,6 @@ function left_edge_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global solvingTimeBegin;
-global solved;
 n = str2double (get(hObject, 'String'));
 if (n <= 0 || isnan(n))
     errordlg('Error! solvingTimeBegin is incorrect.','OK');
@@ -621,7 +631,7 @@ if (n <= 0 || isnan(n))
     set (hObject, 'String', s); 
 else
     solvingTimeBegin = n;
-    solved = 0;
+    solved (0, handles);
 end
 
 
@@ -631,7 +641,6 @@ function right_edge_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global solvingTimeEnd;
-global solved;
 n = str2double (get(hObject, 'String'));
 if (n <= 0 || isnan(n))
     errordlg('Error! solvingTimeEnd is incorrect.','OK');
@@ -639,7 +648,7 @@ if (n <= 0 || isnan(n))
     set (hObject, 'String', s); 
 else
     solvingTimeEnd = n;
-    solved = 0;
+    solved (0, handles);
 end
 
 
@@ -649,7 +658,6 @@ function t_star_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 global solvingTimeStarred;
-global solved;
 n = str2double (get(hObject, 'String'));
 if (n <= 0 || isnan(n))
     errordlg('Error! solvingTimeStarred is incorrect.','OK');
@@ -657,7 +665,7 @@ if (n <= 0 || isnan(n))
     set (hObject, 'String', s); 
 else
     solvingTimeStarred = n;
-    solved = 0;
+    solved (0, handles);
 end
 
 
@@ -666,25 +674,23 @@ function meth_int_Callback(hObject, eventdata, handles)
 % hObject    handle to meth_int (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global solvingInternalMethod solved;
+global solvingInternalMethod;
 solvingInternalMethod = setMethod (get (hObject, 'Value'));
-solved = 0;
 
 % --- Executes on selection change in meth_ext.
 function meth_ext_Callback(hObject, eventdata, handles)
 % hObject    handle to meth_ext (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global solvingExternalMethod solved;
+global solvingExternalMethod;
 solvingExternalMethod = setMethod (get (hObject, 'Value'));
-solved = 0;
 
 
 function eps_int_Callback(hObject, eventdata, handles)
 % hObject    handle to eps_int (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global solvingInternalEpsilon solved;
+global solvingInternalEpsilon;
 n = str2double(get(hObject,'String'));
 if ((n < 0) || isnan(n)) 
     errordlg('Error! solvingInternalEpsilon is incorrect.','OK');
@@ -692,7 +698,6 @@ if ((n < 0) || isnan(n))
     set (hObject, 'String', s); 
 else
     solvingInternalEpsilon = n;
-    solved = 0;
 end
 % Hints: get(hObject,'String') returns contents of eps_int as text
 %        str2double(get(hObject,'String')) returns contents of eps_int as a double
@@ -703,7 +708,7 @@ function eps_ext_Callback(hObject, eventdata, handles)
 % hObject    handle to eps_ext (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global solvingExternalEpsilon solved;
+global solvingExternalEpsilon;
 n = str2double(get(hObject,'String'));
 if ((n < 0) || isnan(n)) 
     errordlg('Error! solvingExternalEpsilon is incorrect.','OK');
@@ -711,7 +716,6 @@ if ((n < 0) || isnan(n))
     set (hObject, 'String', s); 
 else
     solvingExternalEpsilon = n;
-    solved = 0;
 end
 
 
@@ -720,7 +724,7 @@ function step_Callback(hObject, eventdata, handles)
 % hObject    handle to step (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global solvingStep solved;
+global solvingStep;
 n = str2double(get(hObject,'String'));
 if isnan(n)
     errordlg('Error! solvingStep is incorrect.','OK');
@@ -728,7 +732,6 @@ if isnan(n)
     set (hObject, 'String', s); 
 else
     solvingStep = n;
-    solved = 0;
 end
 
 
@@ -737,7 +740,7 @@ function Iter_num_Callback(hObject, eventdata, handles)
 % hObject    handle to Iter_num (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global solvingIterationCount solved;
+global solvingIterationCount;
 n = str2double(get(hObject,'String'));
 if ((isnan (n)) || (n <= 0) || (floor(n) < n))
     errordlg('Error! solvingIterationCount is incorrect.','OK');
@@ -745,7 +748,6 @@ if ((isnan (n)) || (n <= 0) || (floor(n) < n))
     set (hObject, 'String', s); 
 else
     solvingIterationCount = n;
-    solved = 0;
 end
 
 % --------------------------------------------------------------------
@@ -776,3 +778,10 @@ fid = fopen(filename,'w');
 fclose (fid);
 save(filename,'saveStructure');
 updateExamplesList (handles);
+
+
+% --- Executes on button press in tableResult.
+function tableResult_Callback(hObject, eventdata, handles)
+% hObject    handle to tableResult (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)

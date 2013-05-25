@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 25-May-2013 15:53:19
+% Last Modified by GUIDE v2.5 25-May-2013 18:43:37
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -230,8 +230,13 @@ end
 solved = 1;
 setShowSystemForSolving ('off', handles);
 
+function solved (val, handles)
+global solved;
+
+
 % --- function to init data in table
 function [ ] = initExample (file, handles)
+global solved;
 global systemForSolving; 
 global systemForSolvingDimension;
 global solvingTimeBegin;  global solvingTimeEnd; 
@@ -240,6 +245,8 @@ global solvingIterationCount;
 global solvingTimeStarred;
 global solvingExternalMethod; global solvingInternalMethod; 
 global solvingExternalEpsilon; global solvingInternalEpsilon;
+solved = 0;
+set (handles.tableReults, 'Visible', solved);
 load (file);
 sS = saveStructure;
 fR = sS.fieldRecord;
@@ -302,9 +309,9 @@ else
     if (dSize(1) > systemForSolvingDimension)
         d = d (1:systemForSolvingDimension,:);
     elseif (dSize(1) < systemForSolvingDimension)
-        cat (  
+        d = cat (systemForSolvingDimension - dSize(1), d, {'' '' 0 [true]});  
     end
-    set (handles.sdu, 'Data', cell (systemForSolvingDimension, 4));
+    set (handles.sdu, 'Data', d);
 end
 
 % --- Executes during object creation, after setting all properties.
@@ -776,3 +783,10 @@ fid = fopen(filename,'w');
 fclose (fid);
 save(filename,'saveStructure');
 updateExamplesList (handles);
+
+
+% --- Executes on button press in tableResult.
+function tableResult_Callback(hObject, eventdata, handles)
+% hObject    handle to tableResult (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)

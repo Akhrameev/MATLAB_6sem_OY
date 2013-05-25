@@ -28,7 +28,7 @@ elseif (state == fileCreationStates.sDiff)
     for i = 1 : valueSize
         fprintf (fid, '\t dx(%u) = %s;\n', i, parse (value {i, 1}));
     end
-elseif (state == fileCreationStates.sInt)
+elseif (state == fileCreationStates.sInternal)
     syms x y t;
     sizeMult = valueSize * (valueSize + 1);
     x = sym ('x', [sizeMult 1]);
@@ -47,7 +47,7 @@ elseif (state == fileCreationStates.sInt)
         end
     end
 end
-fprintf (fid,'end');
+fprintf (fid, footerForState (state));
 fclose (fid);
 end
 
@@ -62,9 +62,9 @@ switch (state)
 	case fileCreationStates.sA
         fileName = 'A.m';
     case fileCreationStates.sDiff
-        fileName = 'sys_diff.m';
-    case fileCreationStates.sInt
-        fileName = 'Int.m';
+        fileName = 'systemDifferential.m';
+    case fileCreationStates.sInternal
+        fileName = 'Internal.m';
     otherwise
         fileName = 'error.m';
 end
@@ -81,9 +81,9 @@ switch (state)
 	case fileCreationStates.sA
         header = 'function [a] = A(t,x)\n';
     case fileCreationStates.sDiff
-        header = 'function [dx] = sys_diff(t,x)\n';
-    case fileCreationStates.sInt
-        header = 'function [dx] = Int(t,x)\n';
+        header = 'function [dx] = systemDifferential(t,x)\n';
+    case fileCreationStates.sInternal
+        header = 'function [dx] = Internal(t,x)\n';
     otherwise
         header = 'errorHeader';
 end
@@ -98,12 +98,28 @@ switch (state)
 	case fileCreationStates.sRy
         initialization = 'ry = [';
 	case fileCreationStates.sA
-        initialization = 'a = [';
+        initialization = 'try\n\ta = [';
     case fileCreationStates.sDiff
         initialization = '\n';
-    case fileCreationStates.sInt
+    case fileCreationStates.sInternal
         initialization = '\n';
     otherwise
         initialization = 'errorInitialization = [';
+end
+end
+
+function [footer] = footerForState (state)
+switch (state)
+    case fileCreationStates.sA
+        fid = fopen('Settings/semiquote.txt','r');
+        semiquote = textscan(fid, '%s');
+        fclose (fid);
+        semiquote = semiquote{1};
+        errorString = cat (semiquote, 'Error in A.m', semiquote);
+        okString = '"OK"';
+        footer = cat ('catch\n\terrordlg (', errorString, ',',okString, ');\nend');
+        %footer = 'catch\n\terrordlg ("Error in A.m","OK");\nend';
+    otherwise
+        footer = 'end';
 end
 end

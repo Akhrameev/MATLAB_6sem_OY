@@ -47,7 +47,7 @@ elseif (state == fileCreationStates.sInternal)
         end
     end
 end
-fprintf (fid,'end');
+fprintf (fid, footerForState (state));
 fclose (fid);
 end
 
@@ -98,12 +98,27 @@ switch (state)
 	case fileCreationStates.sRy
         initialization = 'ry = [';
 	case fileCreationStates.sA
-        initialization = 'a = [';
+        initialization = 'try\n\ta = [';
     case fileCreationStates.sDiff
         initialization = '\n';
     case fileCreationStates.sInternal
         initialization = '\n';
     otherwise
         initialization = 'errorInitialization = [';
+end
+end
+
+function [footer] = footerForState (state)
+switch (state)
+    case fileCreationStates.sA
+        fid = fopen('Settings/semiquote.txt','r');
+        semiquote = textscan(fid, '%s');
+        fclose (fid);
+        semiquote = semiquote {1};
+        footer = strcat ('catch\n\terrordlg (', semiquote, 'Error in A.m (systemForSolving)', semiquote, ',',semiquote, 'OK', semiquote, ');\nend');
+        footer = footer {1};
+        %footer = 'catch\n\terrordlg ("Error in A.m","OK");\nend';
+    otherwise
+        footer = 'end';
 end
 end
