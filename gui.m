@@ -58,7 +58,7 @@ graphicsData = 0;
 handles.output = hObject;
 % Update handles structure
 guidata(hObject, handles);
-set (hObject, 'Name', 'Практикум. 6 семестр. Решение краевых задач. Исходный код: https://github.com/Akhrameev/MATLAB_6sem_OY');
+set (hObject, 'Name', 'Практикум. 6 семестр. Решение краевых задач методом продолжения. Исходный код: https://github.com/Akhrameev/MATLAB_6sem_OY');
 createWaitbar (handles);
 initExample (currentExample, handles);
 
