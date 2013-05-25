@@ -127,10 +127,15 @@ if (filename == 0)
 end
 filename = strcat ('Graphics/', filename);
 F = getframe(handles.axes1);
-tmp = image(F.cdata);
+image(F.cdata);
 axis ('image');
 axis ('off');
-imwrite(F.cdata, filename);
+try
+    imwrite(F.cdata, filename);
+catch
+    filename = strcat (filename, '.png');
+    imwrite (F.cdata, filename);
+end
 
 
 % --------------------------------------------------------------------
