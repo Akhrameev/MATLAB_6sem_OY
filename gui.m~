@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 26-May-2013 00:53:02
+% Last Modified by GUIDE v2.5 27-May-2013 00:39:13
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -51,15 +51,18 @@ function gui_OpeningFcn(hObject, eventdata, handles, varargin)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to gui (see VARARGIN)
-global currentExample progressbarOK;
+global currentExample progressbarOK graphicsData;
 % Choose default command line output for gui
 progressbarOK = 0;
+graphicsData = 0;
 handles.output = hObject;
 % Update handles structure
 guidata(hObject, handles);
-set (hObject, 'Name', 'Практикум. 6 семестр. Решение краевых задач. Исходный код: https://github.com/Akhrameev/MATLAB_6sem_OY');
+set (hObject, 'Name', 'Практикум. 6 семестр. Решение краевых задач методом продолжения. Исходный код: https://github.com/Akhrameev/MATLAB_6sem_OY');
 createWaitbar (handles);
+set(0,'DefaultFigurePaperPositionMode','auto');
 initExample (currentExample, handles);
+
 
 % UIWAIT makes gui wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -94,11 +97,13 @@ end
 function showWaitbar ()
 global jProgressbar wait progressbarOK jInternalProgressbar;
 global solvingIterationCount solvingIterationCurrent;
+global pauseToggleButton;
 if (progressbarOK)
     jProgressbar.setVisible (true);
     jProgressbar.setMaximum (solvingIterationCount);
     jProgressbar.setValue (solvingIterationCurrent);
     jInternalProgressbar.setVisible (true);
+    set (pauseToggleButton, 'Visible', 'on');
 else
     wait = waitbar (solvingIterationCurrent/solvingIterationCount, 'In progress'); 
 end
@@ -116,9 +121,11 @@ end
 
 function closeWaitbar ()
 global jProgressbar wait progressbarOK jInternalProgressbar;
+global pauseToggleButton;
 if (progressbarOK)
     jProgressbar.setVisible (false);
     jInternalProgressbar.setVisible (false);
+    set (pauseToggleButton, 'Visible', 'off');
 else
     close (wait);
 end;
@@ -167,8 +174,8 @@ end;
 % --- function to compute 
 function [ ] = compute (handles)
 global solvingTimeBegin solvingTimeEnd solvingStep;
-global solvingIterationCount systemForSolvingDimension;
-global systemForSolving p Y solvingIterationCurrent;
+global systemForSolvingDimension pause;
+global systemForSolving solvingIterationCurrent;
 if ((solvingTimeEnd - solvingTimeBegin) * solvingStep < 0)
     errorAlert('Ошибка! Некорректное время начала, конца или неверный шаг.');
     return;
@@ -186,11 +193,18 @@ p0 = zeros (1, systemForSolvingDimension);
 for i = 1 : systemForSolvingDimension
    p0 (i) = systemForSolving {i, 3}; 
 end
-solvingIterationCurrent = 0;
+solvingIterationCurrent = 1;
+pause = 0;
+computeExternal (handles);
+
+function computeExternal (handles)
+global solvingIterationCount solvingIterationCurrent;
+global systemForSolvingDimension solvingTimeBegin solvingTimeEnd solvingStep p Y p0;
 showWaitbar ();
 p = external (p0, solvingIterationCount);
 Y = solveDifferential (systemForSolvingDimension, solvingTimeBegin, solvingTimeEnd, solvingStep, p);
 closeWaitbar ();
+solvingIterationCurrent = 0;
 drawPlot (handles);
 
 function drawPlot (handles)
@@ -238,13 +252,16 @@ solved (1, handles);
 setShowSystemForSolving ('off', handles);
 
 function solved (val, handles)
-global solved;
+global solved pauseToggleButton;
 solved = val;
 value = 'off';
 if (solved)
     value = 'on';
+else
+    set (pauseToggleButton, 'Visible', 'off');
 end
 set (handles.tableResult, 'Visible', value);
+set (handles.text22,      'Visible', value);
 set (handles.text23,      'Visible', value);
 set (handles.J_x,         'Visible', value);
 set (handles.computeJx,   'Visible', value);
@@ -595,7 +612,7 @@ function menuHelp_Callback(hObject, eventdata, handles)
 % hObject    handle to menuHelpManual (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+help;
 
 % --------------------------------------------------------------------
 function menuAbout_Callback(hObject, eventdata, handles)
@@ -770,6 +787,9 @@ listSize = size(examplesList);
 listSize = listSize(2);
 defaultName = strcat ('Examples/example', num2str(listSize + 1));
 filename = uiputfile('Examples/*.mat','Сохранить пример', defaultName);
+if (filename == 0)
+    return;
+end
 filename = strcat ('Examples/', filename);
 fid = fopen (filename, 'w');
 fclose (fid);
@@ -923,6 +943,9 @@ function OpenMenuItem_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 global currentExample;
 filename = uigetfile ('Examples/*mat', 'Открыть пример');
+if (filename == 0)
+    return;
+end
 filename = strcat ('Examples/', filename);
 examplesList = updateExamplesList (handles);
 index = strmatch (filename, examplesList, 'exact');
@@ -935,9 +958,58 @@ popupMenuHandle = findobj(gcbf,'Tag','example');
 set (popupMenuHandle, 'Value', index);
 initExample (currentExample, handles);
 
+
+function gotoGraphics (handles, checksolved)
+global graphicsData solved;
+if (~checksolved || solved)
+    setShowSystemForSolving ('off', handles)
+    filename = 'Settings/tmp.png';
+    F = getframe(handles.plotter);
+    image(F.cdata);
+    axis ('image');
+    axis ('off');
+    imwrite(F.cdata, filename);
+    graphicsData = filename;
+    drawPlot (handles);
+else
+    graphicsData = 0;
+end
+graphicsViewer;
+
 % --------------------------------------------------------------------
 function GraphicsMenuItem_Callback(hObject, eventdata, handles)
 % hObject    handle to GraphicsMenuItem (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global graphicsData;
+gotoGraphics (handles, 1);
+
+
+% --------------------------------------------------------------------
+function SaveGraphicMenuItem_Callback(hObject, eventdata, handles)
+% hObject    handle to SaveGraphicMenuItem (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+gotoGraphics (handles, 0);
+
+
+% --------------------------------------------------------------------
+function OYMenuItem_Callback(hObject, eventdata, handles)
+% hObject    handle to OYMenuItem (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+try
+    open ('Settings/prak.pdf');
+catch
+    alertError ('Ошибка! не найден документ или не найден Adobe Acrobat');
+end
+
+% --------------------------------------------------------------------
+function ApplicationMemuItem_Callback(hObject, eventdata, handles)
+% hObject    handle to ApplicationMemuItem (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+try
+    open ('Settings/prak.251-258.pdf');
+catch
+    alertError ('Ошибка! не найден документ или не найден Adobe Acrobat');
+end

@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 26-May-2013 05:02:33
+% Last Modified by GUIDE v2.5 27-May-2013 00:39:13
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -62,6 +62,7 @@ set (hObject, 'Name', 'Практикум. 6 семестр. Решение кр
 createWaitbar (handles);
 set(0,'DefaultFigurePaperPositionMode','auto');
 initExample (currentExample, handles);
+
 
 % UIWAIT makes gui wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
@@ -169,8 +170,9 @@ end;
 % --- function to compute 
 function [ ] = compute (handles)
 global solvingTimeBegin solvingTimeEnd solvingStep;
-global solvingIterationCount systemForSolvingDimension;
-global systemForSolving p Y solvingIterationCurrent;
+global systemForSolvingDimension;
+global systemForSolving solvingIterationCurrent;
+global solvingIterationCount p Y p0;
 if ((solvingTimeEnd - solvingTimeBegin) * solvingStep < 0)
     errorAlert('Ошибка! Некорректное время начала, конца или неверный шаг.');
     return;
@@ -598,7 +600,7 @@ function menuHelp_Callback(hObject, eventdata, handles)
 % hObject    handle to menuHelpManual (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+help;
 
 % --------------------------------------------------------------------
 function menuAbout_Callback(hObject, eventdata, handles)
