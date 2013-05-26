@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 26-May-2013 02:39:20
+% Last Modified by GUIDE v2.5 26-May-2013 05:02:33
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -976,3 +976,26 @@ function SaveGraphicMenuItem_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 gotoGraphics (handles, 0);
+
+
+% --------------------------------------------------------------------
+function OYMenuItem_Callback(hObject, eventdata, handles)
+% hObject    handle to OYMenuItem (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+try
+    open ('Settings/prak.pdf');
+catch
+    alertError ('Ошибка! не найден документ или не найден Adobe Acrobat');
+end
+
+% --------------------------------------------------------------------
+function ApplicationMemuItem_Callback(hObject, eventdata, handles)
+% hObject    handle to ApplicationMemuItem (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+try
+    open ('Settings/prak.251-258.pdf');
+catch
+    alertError ('Ошибка! не найден документ или не найден Adobe Acrobat');
+end
