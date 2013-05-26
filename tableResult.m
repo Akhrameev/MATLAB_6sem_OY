@@ -22,7 +22,7 @@ function varargout = tableResult(varargin)
 
 % Edit the above text to modify the response to help tableResult
 
-% Last Modified by GUIDE v2.5 25-May-2013 22:23:14
+% Last Modified by GUIDE v2.5 26-May-2013 04:28:21
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -129,8 +129,6 @@ function QuitMenuItem_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 delete(handles.figure1);
 
-
-
 function edit1_Callback(hObject, eventdata, handles)
 % hObject    handle to edit1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -210,3 +208,16 @@ d = get(hObject,'Data');
 d{eventdata.Indices(1),eventdata.Indices(2)} = eventdata.EditData;
 dataInTable = d;
 loadData (handles);
+
+
+% --------------------------------------------------------------------
+function XLSMenuItem_Callback(hObject, eventdata, handles)
+% hObject    handle to XLSMenuItem (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global dataInTable;
+try
+    xlswrite ('Settings/tmp.xls', dataInTable);
+catch
+   errorAlert ('Ошибка! Возможно, не установлен Excel.'); 
+end
