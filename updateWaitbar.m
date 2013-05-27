@@ -6,6 +6,10 @@ if (progressbarOK)
     jProgressbar.setMaximum (solvingIterationCount);
     jProgressbar.setValue (solvingIterationCurrent);
 else
+    try 
+        close(wait)
+    catch
+    end
     wait = waitbar (solvingIterationCurrent/solvingIterationCount, 'In progress');
     jProgressbar = 0; 
 end

@@ -103,6 +103,10 @@ if (progressbarOK)
     jProgressbar.setValue (solvingIterationCurrent);
     jInternalProgressbar.setVisible (true);
 else
+    try 
+        close(wait)
+    catch
+    end
     wait = waitbar (solvingIterationCurrent/solvingIterationCount, 'In progress'); 
 end
 
@@ -114,6 +118,10 @@ if (progressbarOK)
     jProgressbar.setValue (value);
     jInternalProgressbar.setVisible (true);
 else
+    try 
+        close(wait)
+    catch
+    end
     wait = waitbar (value/maximum, 'In progress'); 
 end
 
@@ -586,6 +594,8 @@ function sdu_CellEditCallback(hObject, eventdata, handles)
 global Xi Xj;
 Xi = 1;
 Xj = 1;
+set (handles.Xi, 'String', Xi);
+set (handles.Xj, 'String', Xj);
 if (eventdata.Indices(2) <= 3)
     solved (0, handles);
 end

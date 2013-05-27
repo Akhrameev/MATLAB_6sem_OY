@@ -97,14 +97,16 @@ end
 function showWaitbar ()
 global jProgressbar wait progressbarOK jInternalProgressbar;
 global solvingIterationCount solvingIterationCurrent;
-global pauseToggleButton;
 if (progressbarOK)
     jProgressbar.setVisible (true);
     jProgressbar.setMaximum (solvingIterationCount);
     jProgressbar.setValue (solvingIterationCurrent);
     jInternalProgressbar.setVisible (true);
-    set (pauseToggleButton, 'Visible', 'on');
 else
+    try 
+        close(wait)
+    catch
+    end
     wait = waitbar (solvingIterationCurrent/solvingIterationCount, 'In progress'); 
 end
 
@@ -116,16 +118,18 @@ if (progressbarOK)
     jProgressbar.setValue (value);
     jInternalProgressbar.setVisible (true);
 else
+    try 
+        close(wait)
+    catch
+    end
     wait = waitbar (value/maximum, 'In progress'); 
 end
 
 function closeWaitbar ()
 global jProgressbar wait progressbarOK jInternalProgressbar;
-global pauseToggleButton;
 if (progressbarOK)
     jProgressbar.setVisible (false);
     jInternalProgressbar.setVisible (false);
-    set (pauseToggleButton, 'Visible', 'off');
 else
     close (wait);
 end;
@@ -174,8 +178,9 @@ end;
 % --- function to compute 
 function [ ] = compute (handles)
 global solvingTimeBegin solvingTimeEnd solvingStep;
-global systemForSolvingDimension pause;
+global systemForSolvingDimension;
 global systemForSolving solvingIterationCurrent;
+global solvingIterationCount p Y p0;
 if ((solvingTimeEnd - solvingTimeBegin) * solvingStep < 0)
     errorAlert('Ошибка! Некорректное время начала, конца или неверный шаг.');
     return;
@@ -193,18 +198,11 @@ p0 = zeros (1, systemForSolvingDimension);
 for i = 1 : systemForSolvingDimension
    p0 (i) = systemForSolving {i, 3}; 
 end
-solvingIterationCurrent = 1;
-pause = 0;
-computeExternal (handles);
-
-function computeExternal (handles)
-global solvingIterationCount solvingIterationCurrent;
-global systemForSolvingDimension solvingTimeBegin solvingTimeEnd solvingStep p Y p0;
+solvingIterationCurrent = 0;
 showWaitbar ();
 p = external (p0, solvingIterationCount);
 Y = solveDifferential (systemForSolvingDimension, solvingTimeBegin, solvingTimeEnd, solvingStep, p);
 closeWaitbar ();
-solvingIterationCurrent = 0;
 drawPlot (handles);
 
 function drawPlot (handles)
@@ -252,13 +250,11 @@ solved (1, handles);
 setShowSystemForSolving ('off', handles);
 
 function solved (val, handles)
-global solved pauseToggleButton;
+global solved;
 solved = val;
 value = 'off';
 if (solved)
     value = 'on';
-else
-    set (pauseToggleButton, 'Visible', 'off');
 end
 set (handles.tableResult, 'Visible', value);
 set (handles.text22,      'Visible', value);
@@ -582,7 +578,7 @@ set (hObject, 'String', Xj);
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
-end
+    end9
 
 
 % --- Executes when entered data in editable cell(s) in sdu.
@@ -598,6 +594,8 @@ function sdu_CellEditCallback(hObject, eventdata, handles)
 global Xi Xj;
 Xi = 1;
 Xj = 1;
+set (handles.Xi, 'String', Xi);
+set (handles.Xj, 'String', Xj);
 if (eventdata.Indices(2) <= 3)
     solved (0, handles);
 end
