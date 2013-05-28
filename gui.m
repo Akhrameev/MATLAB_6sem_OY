@@ -69,7 +69,6 @@ initExample (currentExample, handles);
 
 function createWaitbar (handles)
 global jProgressbar progressbarOK jInternalProgressbar;
-global solvingIterationCount solvingIterationCurrent;
 if (progressbarOK)
     
 else
@@ -79,9 +78,9 @@ else
         jProgressbarPosition = get (externalProgressbar, 'Position');
         jInternalProgressbarPosition = get (internalProgressbar, 'Position');
         jProgressbar = jcontrol(handles.figure1, javax.swing.JProgressBar(),'Position', jProgressbarPosition, 'Visible', 'off'); 
-        jProgressbar.setMaximum (solvingIterationCount);
+        jProgressbar.setMaximum (1);
         jProgressbar.setMinimum (0);
-        jProgressbar.setValue (solvingIterationCurrent);
+        jProgressbar.setValue (1);
         jProgressbar.setBorderPainted (true);
         jProgressbar.setStringPainted (true);
         jInternalProgressbar = jcontrol (handles.figure1, javax.swing.JProgressBar(), 'Position', jInternalProgressbarPosition, 'Visible', 'off');        
