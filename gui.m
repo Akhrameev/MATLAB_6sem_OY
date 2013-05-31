@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 27-May-2013 00:39:13
+% Last Modified by GUIDE v2.5 28-May-2013 14:42:06
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -185,6 +185,7 @@ if ((solvingTimeEnd - solvingTimeBegin) * solvingStep < 0)
     return;
 end
 systemForSolving = get(handles.sdu,'Data');
+tic;
 x = sym ('x', [1 systemForSolvingDimension]);
 y = sym ('y', [1 systemForSolvingDimension]);
 createA (parse (char (jacobian (systemForSolving (:, 1), x))));
@@ -198,11 +199,26 @@ for i = 1 : systemForSolvingDimension
    p0 (i) = systemForSolving {i, 3}; 
 end
 solvingIterationCurrent = 0;
+time_solving = toc;
+updateTimeOfSolutionString(time_solving, 1, handles);
 showWaitbar ();
+tic;
 p = external (p0, solvingIterationCount);
 Y = solveDifferential (systemForSolvingDimension, solvingTimeBegin, solvingTimeEnd, solvingStep, p);
+time_solving = toc;
+updateTimeOfSolutionString (time_solving, 0, handles);
 closeWaitbar ();
 drawPlot (handles);
+
+function updateTimeOfSolutionString (time, helpers, handles)
+if (helpers)
+    beginningString = 'Время составления вспомогательных файлов для рассчёта: ';
+else
+    beginningString = 'Время решения задачи: ';
+end
+timeOfSolutionString = strcat (beginningString, num2str (time));
+set (handles.timeOfSolution, 'String', timeOfSolutionString);
+set (handles.timeOfSolution, 'Visible', 'on');
 
 function drawPlot (handles)
 global systemForSolving Y;
@@ -255,11 +271,12 @@ value = 'off';
 if (solved)
     value = 'on';
 end
-set (handles.tableResult, 'Visible', value);
-set (handles.text22,      'Visible', value);
-set (handles.text23,      'Visible', value);
-set (handles.J_x,         'Visible', value);
-set (handles.computeJx,   'Visible', value);
+set (handles.tableResult,    'Visible', value);
+set (handles.text22,         'Visible', value);
+set (handles.text23,         'Visible', value);
+set (handles.J_x,            'Visible', value);
+set (handles.computeJx,      'Visible', value);
+set (handles.timeOfSolution, 'Visible', value);
 
 % --- function to init data in table
 function [ ] = initExample (file, handles)
@@ -1010,3 +1027,13 @@ try
 catch
     alertError ('Ошибка! не найден документ или не найден Adobe Acrobat');
 end
+
+
+% --- Executes on button press in pauseToggleButton.
+function pauseToggleButton_Callback(hObject, eventdata, handles)
+% hObject    handle to pauseToggleButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+%pause;
+% Hint: get(hObject,'Value') returns toggle state of pauseToggleButton
+pause;
